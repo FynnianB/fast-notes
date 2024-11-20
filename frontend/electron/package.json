@@ -1,0 +1,59 @@
+{
+  "name": "fast-notes-desktop",
+  "productName": "fast-notes",
+  "version": "1.0.0",
+  "description": "Fast and easy way to take notes and finalize your thoughts later",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "build": "vite build",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint renderer/"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.5.0",
+    "@electron-forge/maker-deb": "^7.5.0",
+    "@electron-forge/maker-rpm": "^7.5.0",
+    "@electron-forge/maker-squirrel": "^7.5.0",
+    "@electron-forge/maker-zip": "^7.5.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
+    "@electron-forge/plugin-fuses": "^7.5.0",
+    "@electron-forge/plugin-vite": "^7.5.0",
+    "@electron/fuses": "^1.8.0",
+    "@eslint/js": "^9.15.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "electron": "33.2.0",
+    "eslint": "^9.15.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-boundaries": "^5.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.12.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0",
+    "vite": "^5.0.12"
+  },
+  "keywords": [
+    "note-taking",
+    "multi-platform",
+    "multi-devices"
+  ],
+  "author": {
+    "name": "Fynnian Brosius",
+    "email": "fynnian.brosius@gmx.de"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-window-state": "^5.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
