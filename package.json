@@ -1,0 +1,20 @@
+{
+  "name": "fast-notes",
+  "version": "1.0.0",
+  "description": "Fast and easy way to take notes and finalize your thoughts later",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "note-taking",
+    "multi-platform",
+    "multi-devices"
+  ],
+  "author": "Fynnian Brosius",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mysql2": "^3.11.4"
+  }
+}
