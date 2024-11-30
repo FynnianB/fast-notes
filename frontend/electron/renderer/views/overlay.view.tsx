@@ -1,7 +1,7 @@
+import OverlayInput from '@modules/overlay/components/overlay-input/overlay-input.component';
+
 const OverlayView = () => (
-    <div>
-        <h1>Overlay</h1>
-    </div>
+    <OverlayInput />
 );
 
 export default OverlayView;

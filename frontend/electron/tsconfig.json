@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "ESNext",
     "allowJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "noImplicitAny": true,
     "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "outDir": "dist",
     "moduleResolution": "node",
