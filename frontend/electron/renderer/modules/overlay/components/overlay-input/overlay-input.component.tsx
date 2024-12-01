@@ -1,5 +1,6 @@
 import style from './overlay-input.module.less';
 import { useState } from 'react';
+import { addNote, closeOverlay } from '@modules/overlay/api/notes.api';
 
 const OverlayInput = () => {
     const [note, setNote] = useState('');
@@ -8,11 +9,12 @@ const OverlayInput = () => {
     const handleSubmit = async () => {
         if (note.length <= 0) return;
         setError(false);
-        // const success = await addNote(note);
-        const success = true;
+        const success = await addNote(note);
         if (!success) {
             setError(true);
+            return;
         }
+        await closeOverlay();
     };
 
     return (
