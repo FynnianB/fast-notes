@@ -27,11 +27,6 @@ const InlineMigrationsVitePlugin = () => {
             outputFile = path.resolve(config.build.outDir, 'migrations.inline.mjs');
             fs.writeFileSync(outputFile, `export default ${JSON.stringify(migrations, null, 2)};`);
         },
-        closeBundle() {
-            if (outputFile && fs.existsSync(outputFile)) {
-                fs.unlinkSync(outputFile); // Remove the migrations.inline.js file after the build
-            }
-        },
     }
 };
 

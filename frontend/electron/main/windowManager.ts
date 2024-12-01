@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, nativeImage } from 'electron';
 import path from 'path';
 import windowStateKeeper from 'electron-window-state';
 
@@ -59,6 +59,7 @@ const createMainWindow = () => {
         titleBarStyle: 'hidden',
         titleBarOverlay: true,
         darkTheme: true,
+        icon: nativeImage.createFromPath(path.join(__dirname, '/assets/icons/fast-notes-icon.ico'))
     });
 
     if (REACT_RENDERER_VITE_DEV_SERVER_URL) {
