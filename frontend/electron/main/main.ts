@@ -30,7 +30,7 @@ app.whenReady()
         handleIpc();
 
         // Tray icon
-        const icon = nativeImage.createFromPath(path.join(__dirname, '/assets/images/fast-notes-icon.jpeg'));
+        const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icons/fast-notes-icon.png'));
         tray = new Tray(icon);
         tray.setToolTip('Fast Notes');
 
