@@ -1,9 +1,10 @@
 export interface IElectronAPI {
-    loadPreferences: () => Promise<void>,
+    addNote: (content: string) => Promise<boolean>,
+    closeOverlay: () => Promise<void>
 }
 
 declare global {
     interface Window {
-        electronAPI: IElectronAPI
+        electronApi: IElectronAPI
     }
 }
