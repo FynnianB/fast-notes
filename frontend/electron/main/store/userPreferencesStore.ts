@@ -6,6 +6,7 @@ const userPreferencesStore = new Store<UserPreferences>({
     name: 'userPreferences',
     defaults: {
         dashboardNoteDrawerWidth: 25,
+        dashboardNoteDrawerExpanded: true
     }
 });
 

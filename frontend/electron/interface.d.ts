@@ -10,7 +10,8 @@ export interface IElectronAPI {
     updateUserPreferences: (settings: UserPreferences) => Promise<void>,
     getUserPreferences: () => Promise<UserPreferences>,
     fetchNotes: () => Promise<Note[]>,
-    onUpdateNotes: (callback: (notes: Note[]) => void) => void
+    onUpdateNotes: (callback: (notes: Note[]) => void) => void,
+    openOverlay: () => Promise<void>
 }
 
 declare global {

@@ -1,9 +1,18 @@
-.notesDrawer {
+.notesDrawerWrapper {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  box-shadow: var(--shadow-3);
+  transition: width 200ms ease-in-out;
+  width: 0;
+
+  &.expanded {
+    width: 100%;
+  }
+
+  .notesDrawer {
+    box-shadow: var(--shadow-3);
+  }
 }
 
 .content {

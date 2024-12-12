@@ -8,7 +8,7 @@ const NotesDrawer = () => {
 
     return (
         <ScrollArea scrollbars="vertical" className={style.component}>
-            <Flex direction="column" gap="3" p="4" justify="start">
+            <Flex direction="column" gap="3" p="4" justify="start" minWidth="200px">
                 {notes.map(note => (
                     <Card size="2" key={note.uuid}>
                         {note.content}

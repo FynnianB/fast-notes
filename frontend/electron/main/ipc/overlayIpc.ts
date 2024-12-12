@@ -10,6 +10,10 @@ const handleIpc = () => {
         windowManager.hideOverlayWindow();
         await windowManager.resetOverlayWindow();
     });
+
+    ipcMain.handle('overlay/open', async () => {
+        await windowManager.forceOpenNewOverlayWindow();
+    });
 }
 
 export default handleIpc;

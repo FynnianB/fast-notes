@@ -6,6 +6,7 @@ import { RootState } from '../../store';
 
 const initialState: UserPreferencesStore = {
     dashboardNoteDrawerWidth: 25,
+    dashboardNoteDrawerExpanded: true,
 };
 
 export const loadUserPreferences = createAsyncThunk(
@@ -36,6 +37,9 @@ const userPreferencesSlice = createSlice({
         setDashboardNoteDrawerWidth(state, action: PayloadAction<number>) {
             state.dashboardNoteDrawerWidth = action.payload;
         },
+        setDashboardNoteDrawerExpanded(state, action: PayloadAction<boolean>) {
+            state.dashboardNoteDrawerExpanded = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(loadUserPreferences.fulfilled, (_state, action) => {
@@ -44,7 +48,7 @@ const userPreferencesSlice = createSlice({
     },
 });
 
-export const { setDashboardNoteDrawerWidth } = userPreferencesSlice.actions;
+export const { setDashboardNoteDrawerWidth, setDashboardNoteDrawerExpanded } = userPreferencesSlice.actions;
 
 export const selectUserPreferences = (state: RootState) => state.userPreferences;
 
