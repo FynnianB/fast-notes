@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Action, createAsyncThunk, createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { fetchUserPreferences, updateUserPreferences } from '@common/api/user-preferences.api';
-import { AppMiddleware, UserPreferencesStore } from '@common/@types/store.types';
+import { UserPreferencesStore } from '@common/@types/store.types';
 import debounce from 'lodash.debounce';
 import { RootState } from '../../store';
 
@@ -19,8 +19,9 @@ export const loadUserPreferences = createAsyncThunk(
 
 const debouncedUpdateUserPreferences = debounce(updateUserPreferences, 1000);
 
-export const userPreferencesMiddleware: AppMiddleware = (storeApi) => (next) => async (action) => {
-    const result = next(action);
+export const userPreferencesMiddleware: Middleware = (storeApi) => (next) => async (untypedAction) => {
+    const result = next(untypedAction);
+    const action = untypedAction as Action;
 
     if (action.type.startsWith('userPreferences/') && !action.type.startsWith('userPreferences/load')) {
         const currentPreferences = storeApi.getState().userPreferences;
