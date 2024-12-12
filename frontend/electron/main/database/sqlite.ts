@@ -21,11 +21,11 @@ class SQLite {
     }
 
     public get = (query: string, params: any[] = []) => {
-        return this.db.prepare(query).get(params);
+        return this.db.prepare(query).expand().get(params);
     }
 
     public all = (query: string, params: any[] = []) => {
-        return this.db.prepare(query).all(params);
+        return this.db.prepare(query).expand().all(params);
     }
 
     public transaction = (fn: (sqlite: SQLite) => void) => {

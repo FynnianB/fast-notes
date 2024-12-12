@@ -8,7 +8,7 @@ export default defineConfig({
             input: {
                 main_window: path.resolve(__dirname, 'main_window.html'),
                 overlay: path.resolve(__dirname, 'overlay.html'),
-            },
+            }
         },
     },
     resolve: {

@@ -1,14 +1,14 @@
-CREATE TABLE IF NOT EXISTS notes (
+CREATE TABLE IF NOT EXISTS note (
     uuid VARCHAR(64) PRIMARY KEY,
     content TEXT NOT NULL,
     last_modified DATETIME DEFAULT CURRENT_TIMESTAMP,
     category_id VARCHAR(64) DEFAULT NULL,
     sync_status VARCHAR(32) NOT NULL,
     is_deleted BOOLEAN DEFAULT 0,
-    FOREIGN KEY (category_id) REFERENCES categories (uuid)
+    FOREIGN KEY (category_id) REFERENCES category (uuid)
 );
 
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS category (
     uuid VARCHAR(64) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     last_modified DATETIME DEFAULT CURRENT_TIMESTAMP

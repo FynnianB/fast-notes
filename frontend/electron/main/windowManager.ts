@@ -8,7 +8,7 @@ declare const REACT_RENDERER_VITE_NAME: string;
 let mainWindow: BrowserWindow|null = null;
 let overlayWindow: BrowserWindow|null = null;
 
-const createOverlayWindow = () => {
+const createOverlayWindow = async () => {
     overlayWindow = new BrowserWindow({
         width: 400,
         height: 300,
@@ -29,20 +29,20 @@ const createOverlayWindow = () => {
     });
 
     if (REACT_RENDERER_VITE_DEV_SERVER_URL) {
-        overlayWindow.loadURL(REACT_RENDERER_VITE_DEV_SERVER_URL + '/overlay').then(_ => {});
+        await overlayWindow.loadURL(REACT_RENDERER_VITE_DEV_SERVER_URL + '/overlay');
     } else {
-        overlayWindow.loadFile(path.join(__dirname, `../renderer/${REACT_RENDERER_VITE_NAME}/overlay.html`)).then(_ => {});
+        await overlayWindow.loadFile(path.join(__dirname, `../renderer/${REACT_RENDERER_VITE_NAME}/overlay.html`));
     }
 
     overlayWindow.webContents.on('before-input-event', (event, input) => {
         if (input.key === 'Escape') {
-            hideOverlayWindow();
             event.preventDefault();
+            hideOverlayWindow();
         }
     });
 };
 
-const createMainWindow = () => {
+const createMainWindow = async () => {
     let mainWindowState = windowStateKeeper({
         defaultWidth: 1000,
         defaultHeight: 800
@@ -57,43 +57,58 @@ const createMainWindow = () => {
             preload: path.join(__dirname, 'main-window.preload.js'),
         },
         titleBarStyle: 'hidden',
-        titleBarOverlay: true,
+        titleBarOverlay: {
+            color: '#222',
+            symbolColor: '#686868',
+            height: 36,
+        },
         darkTheme: true,
+        backgroundColor: '#111113',
         icon: nativeImage.createFromPath(path.join(__dirname, '/assets/icons/fast-notes-icon.ico'))
     });
 
     if (REACT_RENDERER_VITE_DEV_SERVER_URL) {
-        mainWindow.loadURL(REACT_RENDERER_VITE_DEV_SERVER_URL + '/main_window');
+        await mainWindow.loadURL(REACT_RENDERER_VITE_DEV_SERVER_URL + '/main_window');
     } else {
-        mainWindow.loadFile(path.join(__dirname, `../renderer/${REACT_RENDERER_VITE_NAME}/main_window.html`));
+        await mainWindow.loadFile(path.join(__dirname, `../renderer/${REACT_RENDERER_VITE_NAME}/main_window.html`));
     }
     mainWindow.on('closed', function () {
         mainWindow = null
     })
 
+    // Open DevTools
+    if (process.env.NODE_ENV === 'development') {
+        mainWindow.webContents.openDevTools();
+    }
+
     mainWindowState.manage(mainWindow);
 };
 
-const forceOpenNewOverlayWindow = () => {
+const invokeMainWindowEvent = (channel: string, ...args: any[]) => {
+    if (!mainWindow) return;
+    mainWindow.webContents.send(channel, ...args);
+};
+
+const forceOpenNewOverlayWindow = async () => {
     if (overlayWindow) {
-        resetOverlayWindow();
+        await resetOverlayWindow();
     }
     if (overlayWindow) overlayWindow.show();
 }
 
-const openOverlayWindow = () => {
+const openOverlayWindow = async () => {
     if (!overlayWindow) {
-        createOverlayWindow();
+        await createOverlayWindow();
     }
     if (overlayWindow) overlayWindow.show();
 }
 
-const resetOverlayWindow = () => {
+const resetOverlayWindow = async () => {
     if (!overlayWindow) return;
 
     overlayWindow.close();
     overlayWindow = null;
-    createOverlayWindow();
+    await createOverlayWindow();
 }
 
 const hideOverlayWindow = () => {
@@ -102,17 +117,19 @@ const hideOverlayWindow = () => {
     overlayWindow.hide();
 }
 
-const showMainWindow = () => {
-    if (!mainWindow) createMainWindow();
+const showMainWindow = async () => {
+    if (!mainWindow) {
+        await createMainWindow();
+    }
     if (!mainWindow) return;
-
     mainWindow.show();
 }
 
-const focusMainWindow = () => {
-    if (!mainWindow) createMainWindow();
+const focusMainWindow = async () => {
+    if (!mainWindow) {
+        await createMainWindow();
+    }
     if (!mainWindow) return;
-
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
 }
@@ -121,9 +138,11 @@ const closeMainWindow = () => {
     if (!mainWindow) return;
 
     mainWindow.close();
+    mainWindow = null;
 }
 
 export {
+    invokeMainWindowEvent,
     forceOpenNewOverlayWindow,
     createOverlayWindow,
     openOverlayWindow,

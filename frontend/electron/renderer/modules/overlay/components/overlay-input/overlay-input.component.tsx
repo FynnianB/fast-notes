@@ -1,6 +1,6 @@
 import style from './overlay-input.module.less';
 import { useState } from 'react';
-import { addNote, closeOverlay } from '@modules/overlay/api/notes.api';
+import { addNote, closeOverlay } from '@modules/overlay/api/overlay.api';
 
 const OverlayInput = () => {
     const [note, setNote] = useState('');

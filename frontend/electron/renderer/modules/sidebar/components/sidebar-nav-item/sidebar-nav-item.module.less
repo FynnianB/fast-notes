@@ -1,0 +1,20 @@
+.component {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  color: darkgray;
+
+  &.active {
+    color: white;
+  }
+
+  .activeIndicator {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 3px;
+    background-color: white;
+  }
+}

@@ -1,0 +1,29 @@
+.component {
+  height: 100dvh;
+  width: 100dvw;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  .header {
+    z-index: 99999;
+    height: 36px;
+    background-color: var(--gray-3);
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
+
+  .content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+
+    main {
+      flex-grow: 1;
+      position: relative;
+    }
+  }
+}

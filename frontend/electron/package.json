@@ -6,11 +6,30 @@
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
-    "build": "vite build",
+    "rebuild": "electron-rebuild",
+    "postinstall": "electron-rebuild",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint renderer/"
+    "lint": "eslint renderer/",
+    "clean": "rm -rf node_modules && rm -rf .vite && rm -rf out"
+  },
+  "dependencies": {
+    "@radix-ui/themes": "^3.1.6",
+    "@reduxjs/toolkit": "^2.4.0",
+    "better-sqlite3": "^11.5.0",
+    "classnames": "^2.5.1",
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-store": "^10.0.0",
+    "electron-window-state": "^5.0.3",
+    "lodash.debounce": "^4.0.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.1.2",
+    "react-rnd": "^10.4.13",
+    "react-router": "^7.0.1",
+    "redux-logger": "^3.0.6",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.5.0",
@@ -24,11 +43,14 @@
     "@eslint/js": "^9.15.0",
     "@types/better-sqlite3": "^7.6.12",
     "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/redux-logger": "^3.0.13",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
     "electron": "33.2.0",
+    "electron-devtools-installer": "^3.2.0",
     "eslint": "^9.15.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.6.3",
@@ -52,13 +74,5 @@
     "name": "Fynnian Brosius",
     "email": "fynnian.brosius@gmx.de"
   },
-  "license": "MIT",
-  "dependencies": {
-    "better-sqlite3": "^11.5.0",
-    "electron-squirrel-startup": "^1.0.1",
-    "electron-window-state": "^5.0.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "uuid": "^11.0.3"
-  }
+  "license": "MIT"
 }
