@@ -1,8 +1,10 @@
-import { app, BrowserWindow, Tray, Menu, nativeImage, globalShortcut } from 'electron';
+import { app, Tray, Menu, nativeImage, globalShortcut } from 'electron';
 import installExtension, { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import started from 'electron-squirrel-startup';
-import * as windowManager from './windowManager';
+import * as mainWindowHelper from './window/mainWindowHelper';
+import * as overlayHelper from './window/overlayHelper';
+import * as windowManager from './window/windowManager';
 import { handleIpc } from './ipc';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -19,11 +21,11 @@ let tray: Tray;
 
 app.on('second-instance', async (_event, argv, _workingDirectory) => {
     if (argv.includes('--overlay')) {
-        await windowManager.forceOpenNewOverlayWindow();
+        await overlayHelper.forceOpenNewOverlayWindow();
         return;
     }
     // Someone tried to run a second instance, we should focus our window
-    await windowManager.focusMainWindow();
+    await mainWindowHelper.focusMainWindow();
 });
 app.whenReady()
     .then(async () => {
@@ -46,15 +48,15 @@ app.whenReady()
         tray.setToolTip('Fast Notes');
 
         const contextMenu = Menu.buildFromTemplate([
-            { label: 'Open Dashboard', click: () => windowManager.showMainWindow() },
-            { label: 'New Note', click: () => windowManager.forceOpenNewOverlayWindow() },
+            { label: 'Open Dashboard', click: () => mainWindowHelper.showMainWindow() },
+            { label: 'New Note', click: () => overlayHelper.openOverlayWindow() },
             { label: 'Quit', click: () => app.quit() },
         ]);
         tray.setContextMenu(contextMenu);
-        tray.on('click', () => windowManager.forceOpenNewOverlayWindow());
+        tray.on('click', () => overlayHelper.openOverlayWindow());
 
         // Global shortcuts
-        globalShortcut.register('Alt+CommandOrControl+N', () => windowManager.openOverlayWindow());
+        globalShortcut.register('Alt+CommandOrControl+N', () => overlayHelper.openOverlayWindow());
     })
     .then(async () => {
         // Preload overlay window for faster opening later
@@ -62,14 +64,14 @@ app.whenReady()
 
         const args = process.argv.slice(1);
         if (args.includes('--overlay')) {
-            await windowManager.forceOpenNewOverlayWindow()
+            await overlayHelper.forceOpenNewOverlayWindow()
             return;
         }
         if (!args.includes('--hidden')) {
-            await windowManager.showMainWindow();
-            app.on('activate', () => {
-                if (BrowserWindow.getAllWindows().length === 0) windowManager.showMainWindow();
-            });
+            // await mainWindowHelper.showMainWindow();
+            // app.on('activate', () => {
+            //     if (BrowserWindow.getAllWindows().length === 0) mainWindowHelper.showMainWindow();
+            // });
         }
 });
 

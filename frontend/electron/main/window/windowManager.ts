@@ -1,17 +1,20 @@
 import { BrowserWindow, nativeImage } from 'electron';
 import path from 'path';
 import windowStateKeeper from 'electron-window-state';
+import * as overlayHelper from './overlayHelper';
 
 declare const REACT_RENDERER_VITE_DEV_SERVER_URL: string;
 declare const REACT_RENDERER_VITE_NAME: string;
 
-let mainWindow: BrowserWindow|null = null;
-let overlayWindow: BrowserWindow|null = null;
+export let mainWindow: BrowserWindow|null = null;
+export let overlayWindow: BrowserWindow|null = null;
 
-const createOverlayWindow = async () => {
+export const createOverlayWindow = async () => {
     overlayWindow = new BrowserWindow({
         width: 400,
-        height: 300,
+        minHeight: 200,
+        maxHeight: 500,
+        height: 200,
         webPreferences: {
             preload: path.join(__dirname, 'overlay.preload.js'),
         },
@@ -26,6 +29,7 @@ const createOverlayWindow = async () => {
         fullscreen: false,
         skipTaskbar: true,
         darkTheme: true,
+        transparent: true,
     });
 
     if (REACT_RENDERER_VITE_DEV_SERVER_URL) {
@@ -37,12 +41,15 @@ const createOverlayWindow = async () => {
     overlayWindow.webContents.on('before-input-event', (event, input) => {
         if (input.key === 'Escape') {
             event.preventDefault();
-            hideOverlayWindow();
+            overlayHelper.closeOverlayWindow();
+        } else if (input.key === 'M' && input.control) {
+            event.preventDefault();
+            overlayHelper.hideOverlayWindow();
         }
     });
 };
 
-const createMainWindow = async () => {
+export const createMainWindow = async () => {
     let mainWindowState = windowStateKeeper({
         defaultWidth: 1000,
         defaultHeight: 800
@@ -84,71 +91,5 @@ const createMainWindow = async () => {
     mainWindowState.manage(mainWindow);
 };
 
-const invokeMainWindowEvent = (channel: string, ...args: any[]) => {
-    if (!mainWindow) return;
-    mainWindow.webContents.send(channel, ...args);
-};
-
-const forceOpenNewOverlayWindow = async () => {
-    if (overlayWindow) {
-        await resetOverlayWindow();
-    }
-    if (overlayWindow) overlayWindow.show();
-}
-
-const openOverlayWindow = async () => {
-    if (!overlayWindow) {
-        await createOverlayWindow();
-    }
-    if (overlayWindow) overlayWindow.show();
-}
-
-const resetOverlayWindow = async () => {
-    if (!overlayWindow) return;
-
-    overlayWindow.close();
-    overlayWindow = null;
-    await createOverlayWindow();
-}
-
-const hideOverlayWindow = () => {
-    if (!overlayWindow) return;
-
-    overlayWindow.hide();
-}
-
-const showMainWindow = async () => {
-    if (!mainWindow) {
-        await createMainWindow();
-    }
-    if (!mainWindow) return;
-    mainWindow.show();
-}
-
-const focusMainWindow = async () => {
-    if (!mainWindow) {
-        await createMainWindow();
-    }
-    if (!mainWindow) return;
-    if (mainWindow.isMinimized()) mainWindow.restore();
-    mainWindow.focus();
-}
-
-const closeMainWindow = () => {
-    if (!mainWindow) return;
-
-    mainWindow.close();
-    mainWindow = null;
-}
-
-export {
-    invokeMainWindowEvent,
-    forceOpenNewOverlayWindow,
-    createOverlayWindow,
-    openOverlayWindow,
-    resetOverlayWindow,
-    hideOverlayWindow,
-    showMainWindow,
-    focusMainWindow,
-    closeMainWindow,
-}
+export const setOverlayWindow = (window: BrowserWindow|null) => overlayWindow = window;
+export const setMainWindowWindow = (window: BrowserWindow|null) => mainWindow = window;

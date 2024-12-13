@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { Note } from '../../@types/notes.type';
 import { getNotes } from '../database/repository/notes.repository';
-import { invokeMainWindowEvent } from '../windowManager';
+import { invokeMainWindowEvent } from '../window/mainWindowHelper';
 
 const handleIpc = () => {
     ipcMain.handle('notes/fetch-all', async (_event): Promise<Note[]> => {

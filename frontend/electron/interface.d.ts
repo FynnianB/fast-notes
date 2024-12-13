@@ -3,7 +3,8 @@ import { Note } from "./@types/notes.type";
 
 export interface IOverlayAPI {
     addNote: (content: string) => Promise<boolean>,
-    closeOverlay: () => Promise<void>
+    closeOverlay: () => Promise<void>,
+    increaseOverlayHeightBy: (height: number) => Promise<void>,
 }
 
 export interface IElectronAPI {
