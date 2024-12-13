@@ -1,4 +1,4 @@
-import { app, Tray, Menu, nativeImage, globalShortcut } from 'electron';
+import { app, Tray, Menu, nativeImage, globalShortcut, BrowserWindow } from 'electron';
 import installExtension, { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import started from 'electron-squirrel-startup';
@@ -68,10 +68,10 @@ app.whenReady()
             return;
         }
         if (!args.includes('--hidden')) {
-            // await mainWindowHelper.showMainWindow();
-            // app.on('activate', () => {
-            //     if (BrowserWindow.getAllWindows().length === 0) mainWindowHelper.showMainWindow();
-            // });
+            await mainWindowHelper.showMainWindow();
+            app.on('activate', () => {
+                if (BrowserWindow.getAllWindows().length === 0) mainWindowHelper.showMainWindow();
+            });
         }
 });
 
