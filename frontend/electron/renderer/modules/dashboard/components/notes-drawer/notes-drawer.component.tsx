@@ -1,21 +1,26 @@
 import style from './notes-drawer.module.less';
-import { Card, Flex, ScrollArea } from '@radix-ui/themes';
+import { Flex, ScrollArea, Strong, Text } from '@radix-ui/themes';
+import { selectUnplacedNoteItems } from '@common/store/selectors/select-note-items.selector';
 import { useAppSelector } from '@common/hooks/store.hooks';
-import { selectNoteItems } from '@common/store/notes.slice';
+import classNames from 'classnames';
+import NoteCard from '@modules/dashboard/components/note-card/note-card.component';
 
 const NotesDrawer = () => {
-    const notes = useAppSelector(selectNoteItems);
+    const notes = useAppSelector(selectUnplacedNoteItems);
 
     return (
-        <ScrollArea scrollbars="vertical" className={style.component}>
-            <Flex direction="column" gap="3" p="4" justify="start" minWidth="200px">
-                {notes.map(note => (
-                    <Card size="2" key={note.uuid}>
-                        {note.content}
-                    </Card>
-                ))}
-            </Flex>
-        </ScrollArea>
+        <>
+            <ScrollArea scrollbars="vertical" className={classNames(style.component, 'notes-drawer')}>
+                <Flex direction="column" gap="3" p="4" justify="start" minWidth="200px">
+                    {notes.length === 0 && (
+                        <Text align="center" color="gray" mt="7" size="2" wrap="nowrap"><Strong>No new Notes!</Strong><br /> I guess you need to think more...</Text>
+                    )}
+                    {notes.map(note => (
+                        <NoteCard note={note} key={note.uuid}/>
+                    ))}
+                </Flex>
+            </ScrollArea>
+        </>
     )
 };
 

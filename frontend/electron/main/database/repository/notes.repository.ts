@@ -6,23 +6,32 @@ import { SyncQueueAction } from '../../enumerations/SyncQueueAction.enumeration'
 import { Category } from '../entity/category.entity';
 import * as notesMapper from '../mapper/notes.mapper';
 
-export function insertNote({
-    content, lastModified, category, syncStatus, isDeleted
-}: Omit<NoteModel, "uuid">): void {
+export function insertNote(modelParams: Omit<NoteModel, "uuid">): void {
     const uuid = uuidv7();
-    const categoryId = category?.uuid ?? null;
-    const noteObject: NoteEntity = {
-        uuid, content, last_modified: lastModified, category_id: categoryId, sync_status: syncStatus, is_deleted: isDeleted
-    }
-    const sqlFormattedLastModified = lastModified.toISOString().slice(0, 19).replace('T', ' ');
+    const model: NoteModel = {uuid, ...modelParams};
+    const entity = notesMapper.mapModelToEntity(model);
     sqlite.transaction((sqlite) => {
         sqlite.run(
-            'INSERT INTO note (uuid, content, last_modified, category_id, sync_status, is_deleted) VALUES (?,?,?,?,?,?)',
-            [uuid, content, sqlFormattedLastModified, categoryId, syncStatus, isDeleted ? 1 : 0]
+            'INSERT INTO note (uuid, content, last_modified, created_at, category_id, sync_status, is_deleted, x, y) VALUES (?,?,?,?,?,?,?,?,?)',
+            [entity.uuid, entity.content, entity.last_modified, entity.created_at, entity.category_id, entity.sync_status, entity.is_deleted ? 1 : 0, entity.x, entity.y]
         );
         sqlite.run(
             'INSERT INTO sync_queue (table_name, row_id, action, data, last_modified) VALUES (?,?,?,?,?)',
-            ['note', uuid, SyncQueueAction.INSERT, JSON.stringify(noteObject), sqlFormattedLastModified]
+            ['note', uuid, SyncQueueAction.INSERT, JSON.stringify(model), entity.last_modified]
+        );
+    })
+}
+
+export function updateNote(model: NoteModel): void {
+    const entity = notesMapper.mapModelToEntity(model);
+    sqlite.transaction((sqlite) => {
+        sqlite.run(
+            'UPDATE note SET content = ?, last_modified = ?, category_id = ?, sync_status = ?, is_deleted = ?, x = ?, y = ? WHERE uuid = ?',
+            [entity.content, entity.last_modified, entity.category_id, entity.sync_status, entity.is_deleted ? 1 : 0, entity.x, entity.y, entity.uuid]
+        );
+        sqlite.run(
+            'INSERT INTO sync_queue (table_name, row_id, action, data, last_modified) VALUES (?,?,?,?,?)',
+            ['note', model.uuid, SyncQueueAction.UPDATE, JSON.stringify(model), entity.last_modified]
         );
     })
 }

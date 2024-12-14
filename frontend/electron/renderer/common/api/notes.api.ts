@@ -6,6 +6,10 @@ export const fetchNotes = async (): Promise<Note[]> => {
     return await window.electronApi.fetchNotes();
 };
 
+export const updateNote = async (note: Note): Promise<void> => {
+    await window.electronApi.updateNote(note);
+};
+
 export const openOverlay = async (): Promise<void> => {
     await window.electronApi.openOverlay();
 }

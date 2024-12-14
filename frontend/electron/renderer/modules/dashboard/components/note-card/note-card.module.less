@@ -1,0 +1,46 @@
+.component {
+  max-width: 500px;
+  min-width: 300px;
+  width: fit-content;
+
+  .content {
+    min-height: 3lh;
+    max-height: 5lh;
+    position: relative;
+    padding: 10px;
+
+    &.expanded {
+      max-height: none;
+    }
+
+    .expansionTrigger {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60%;
+      background: linear-gradient(180deg, #0000 0%, var(--gray-2) 70%);
+      opacity: 0.9;
+      cursor: pointer;
+
+      > * {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+      }
+    }
+
+    .reductionTrigger {
+      position: absolute;
+      bottom: 7px;
+      right: 10px;
+      cursor: pointer;
+    }
+  }
+
+  .footer {
+    padding: 10px;
+    background-color: var(--gray-2);
+    border-top: 1px solid var(--gray-6);
+  }
+}

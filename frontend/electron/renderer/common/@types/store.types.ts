@@ -5,6 +5,11 @@ export type UserPreferencesStore = {
     dashboardNoteDrawerExpanded: boolean;
 }
 
+export type StoreSpecificNote = Omit<Note, 'lastModified' | 'createdAt'> & {
+    lastModified: string;
+    createdAt: string;
+}
+
 export type NotesStore = {
-    noteItems: Note[];
+    noteItems: StoreSpecificNote[];
 }

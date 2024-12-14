@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('electronApi', {
     updateUserPreferences: (preferences: UserPreferences) => ipcRenderer.invoke('userPreferences/update', preferences),
     getUserPreferences: () => ipcRenderer.invoke('userPreferences/get'),
     fetchNotes: () => ipcRenderer.invoke('notes/fetch-all'),
+    updateNote: (note: Note) => ipcRenderer.invoke('notes/updateNote', note),
     openOverlay: () => ipcRenderer.invoke('overlay/open'),
     // Listeners
     onUpdateNotes: (callback: (notes: Note[]) => void) => ipcRenderer.on('notes/update', (_event, notes) => callback(notes)),

@@ -81,12 +81,7 @@ export const createMainWindow = async () => {
     }
     mainWindow.on('closed', function () {
         mainWindow = null
-    })
-
-    // Open DevTools
-    if (process.env.NODE_ENV === 'development') {
-        mainWindow.webContents.openDevTools();
-    }
+    });
 
     mainWindowState.manage(mainWindow);
 };
