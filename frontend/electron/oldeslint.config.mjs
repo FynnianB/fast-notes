@@ -38,7 +38,8 @@ export default [
           "varsIgnorePattern": "^_",
           "caughtErrorsIgnorePattern": "^_"
         }
-      ]
+      ],
+      "no-console": "warn",
     },
     settings: {
       react: {
