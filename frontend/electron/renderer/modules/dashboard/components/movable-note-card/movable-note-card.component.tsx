@@ -1,5 +1,5 @@
 import { Note } from '../../../../../@types/notes.type';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import NoteCard from '@modules/dashboard/components/note-card/note-card.component';
 import { DraggableData, Rnd } from 'react-rnd';
 import { DraggableEvent } from 'react-draggable';
