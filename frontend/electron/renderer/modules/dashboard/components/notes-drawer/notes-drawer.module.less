@@ -3,9 +3,25 @@
   height: 100%;
   position: relative;
   overflow-x: hidden;
+
+  .cardWrapper {
+    cursor: grab;
+    width: fit-content;
+
+    &.currentlyDragged {
+      opacity: 0;
+    }
+  }
 }
 
-.draggingNote > div::before{
-  background-color: var(--gray-3) !important;
-  backdrop-filter: none !important;
+.portal {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  z-index: 100;
+
+  .portalNoteCard {
+    position: absolute;
+    cursor: grabbing;
+  }
 }

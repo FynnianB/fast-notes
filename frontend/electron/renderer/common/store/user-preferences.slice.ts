@@ -5,8 +5,15 @@ import debounce from 'lodash.debounce';
 import { RootState } from '../../store';
 
 const initialState: UserPreferencesStore = {
-    dashboardNoteDrawerWidth: 25,
-    dashboardNoteDrawerExpanded: true,
+    dashboard: {
+        noteDrawerWidth: 25,
+        noteDrawerExpanded: true,
+        canvasZoom: 1,
+        canvasOffset: {
+            x: 0,
+            y: 0,
+        }
+    }
 };
 
 export const loadUserPreferences = createAsyncThunk(
@@ -36,10 +43,16 @@ const userPreferencesSlice = createSlice({
     initialState,
     reducers: {
         setDashboardNoteDrawerWidth(state, action: PayloadAction<number>) {
-            state.dashboardNoteDrawerWidth = action.payload;
+            state.dashboard.noteDrawerWidth = action.payload;
         },
         setDashboardNoteDrawerExpanded(state, action: PayloadAction<boolean>) {
-            state.dashboardNoteDrawerExpanded = action.payload;
+            state.dashboard.noteDrawerExpanded = action.payload;
+        },
+        setDashboardCanvasZoom(state, action: PayloadAction<number>) {
+            state.dashboard.canvasZoom = action.payload;
+        },
+        setDashboardCanvasOffset(state, action: PayloadAction<{ x: number, y: number }>) {
+            state.dashboard.canvasOffset = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -49,8 +62,13 @@ const userPreferencesSlice = createSlice({
     },
 });
 
-export const { setDashboardNoteDrawerWidth, setDashboardNoteDrawerExpanded } = userPreferencesSlice.actions;
+export const {
+    setDashboardNoteDrawerWidth,
+    setDashboardNoteDrawerExpanded,
+    setDashboardCanvasZoom,
+    setDashboardCanvasOffset
+} = userPreferencesSlice.actions;
 
-export const selectUserPreferences = (state: RootState) => state.userPreferences;
+export const selectDashboardUserPreferences = (state: RootState) => state.userPreferences.dashboard;
 
 export default userPreferencesSlice.reducer;

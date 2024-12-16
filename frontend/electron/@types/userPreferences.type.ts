@@ -1,4 +1,11 @@
 export type UserPreferences = {
-    dashboardNoteDrawerWidth: number,
-    dashboardNoteDrawerExpanded: boolean
+    dashboard: {
+        noteDrawerWidth: number;
+        noteDrawerExpanded: boolean;
+        canvasZoom: number;
+        canvasOffset: {
+            x: number;
+            y: number;
+        }
+    }
 }

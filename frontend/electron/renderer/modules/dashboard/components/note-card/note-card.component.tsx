@@ -5,7 +5,15 @@ import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { RxDoubleArrowDown, RxDoubleArrowUp } from 'react-icons/rx';
 
-const NoteCard = ({ note }: { note: Note }) => {
+interface NoteCardProps {
+    note: Note;
+    hoverEffect?: boolean;
+}
+
+const NoteCard = ({
+    note,
+    hoverEffect = true,
+}: NoteCardProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isExpandable, setIsExpandable] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -19,7 +27,11 @@ const NoteCard = ({ note }: { note: Note }) => {
     }, [note.content]);
 
     return (
-        <Card size="2" className={style.component}>
+        <Card
+            size="2"
+            className={classNames(style.component, { [style.hoverEffect]: hoverEffect })}
+            onWheel={(event) => event.stopPropagation()}
+        >
             <Inset>
                 <Box className={classNames(style.content, { [style.expanded]: isExpanded })} ref={contentRef}>
                     {note.content}
@@ -27,7 +39,7 @@ const NoteCard = ({ note }: { note: Note }) => {
                     {isExpanded && isExpandable && (<div className={style.reductionTrigger} onClick={() => setIsExpanded(false)}><RxDoubleArrowUp size={20}/></div>)}
                 </Box>
                 <Flex justify="between" className={style.footer}>
-                    <Text color="indigo" size="1" weight="medium">
+                    <Text color={note.category ? 'indigo' : 'gray'} size="1" weight="medium">
                         {note.category?.name ?? 'No category'}
                     </Text>
                     <Text color="gray" size="1">{note.createdAt.toLocaleString()}</Text>

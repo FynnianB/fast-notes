@@ -2,49 +2,98 @@ import { Box } from '@radix-ui/themes';
 import { selectPlacedNoteItems } from '@common/store/selectors/select-note-items.selector';
 import { useAppDispatch, useAppSelector } from '@common/hooks/store.hooks';
 import MovableNoteCard from '@modules/dashboard/components/movable-note-card/movable-note-card.component';
-import { moveNote } from '@common/store/notes.slice';
-import { Note } from '../../../../../@types/notes.type';
-import { DraggableEvent } from 'react-draggable';
-import { DraggableData } from 'react-rnd';
-import * as notesApi from '@common/api/notes.api';
+import React, { useRef, useState } from 'react';
+import {
+    selectDashboardUserPreferences,
+    setDashboardCanvasOffset,
+    setDashboardCanvasZoom,
+} from '@common/store/user-preferences.slice';
 
 const Canvas = () => {
     const dispatch = useAppDispatch();
     const notes = useAppSelector(selectPlacedNoteItems);
+    const { canvasZoom, canvasOffset } = useAppSelector(selectDashboardUserPreferences);
+    const [zoom, setZoom] = useState(canvasZoom);
+    const [offset, setOffset] = useState(canvasOffset);
+    const [isPanning, setIsPanning] = useState(false);
+    const startOffset = useRef({ x: 0, y: 0 });
+    const startMouse = useRef({ x: 0, y: 0 });
 
-    const handleDragStop = async (note: Note, _event: DraggableEvent, data: DraggableData) => {
-        dispatch(moveNote({
-            noteUuid: note.uuid,
-            position: {
-                x: data.x,
-                y: data.y,
-            },
-        }));
-        await notesApi.updateNote({
-            ...note,
-            x: data.x,
-            y: data.y,
-        })
+    const zoomCanvas = (mouseX: number, mouseY: number, zoomDelta: number) => {
+        const mouseCanvasX = (mouseX - offset.x) / zoom;
+        const mouseCanvasY = (mouseY - offset.y) / zoom;
+
+        const newZoom = Math.min(2, Math.max(0.3, zoom * zoomDelta));
+        if (newZoom === zoom) return;
+
+        const newOffset = {
+            x: offset.x - (mouseCanvasX * newZoom - mouseCanvasX * zoom),
+            y: offset.y - (mouseCanvasY * newZoom - mouseCanvasY * zoom),
+        };
+        setOffset(newOffset);
+        setZoom(newZoom);
+        dispatch(setDashboardCanvasOffset(newOffset));
+        dispatch(setDashboardCanvasZoom(newZoom));
+    };
+
+    const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+        const zoomDelta = event.deltaY > 0 ? 0.9 : 1.1;
+        zoomCanvas(event.nativeEvent.offsetX, event.nativeEvent.offsetY, zoomDelta);
+    };
+
+    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.button === 1) {
+            setIsPanning(true);
+            startMouse.current = { x: event.clientX, y: event.clientY };
+            startOffset.current = offset;
+        }
+    };
+
+    const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (isPanning) {
+            const dx = event.clientX - startMouse.current.x;
+            const dy = event.clientY - startMouse.current.y;
+            const newOffset = {
+                x: startOffset.current.x + dx,
+                y: startOffset.current.y + dy,
+            }
+            setOffset(newOffset);
+            dispatch(setDashboardCanvasOffset(newOffset));
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsPanning(false);
     };
 
     return (
-        <Box
+        <div
             style={{
-                width: '100%',
-                height: '100%',
+                minWidth: '100%',
+                minHeight: '100%',
                 position: 'relative',
+                overflow: 'hidden',
+                cursor: isPanning ? 'grab' : 'default',
             }}
-            className="canvas"
+            id="dashboard-canvas"
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
         >
-            {notes.map(note => (
-                <MovableNoteCard
-                    note={note}
-                    key={note.uuid}
-                    bounds=".canvas"
-                    onDragStop={(e, d) => handleDragStop(note, e, d)}
-                />
-            ))}
-        </Box>
+            <Box
+                className="canvas-frame"
+                style={{
+                    transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+                    transformOrigin: '0 0',
+                    position: 'relative',
+                }}
+            >
+                {notes.map(note => (
+                    <MovableNoteCard note={note} key={note.uuid} zoom={zoom}/>
+                ))}
+            </Box>
+        </div>
     )
 };
 

@@ -1,8 +1,15 @@
 import { Note } from '../../../@types/notes.type';
 
 export type UserPreferencesStore = {
-    dashboardNoteDrawerWidth: number;
-    dashboardNoteDrawerExpanded: boolean;
+    dashboard: {
+        noteDrawerWidth: number;
+        noteDrawerExpanded: boolean;
+        canvasZoom: number;
+        canvasOffset: {
+            x: number;
+            y: number;
+        }
+    }
 }
 
 export type StoreSpecificNote = Omit<Note, 'lastModified' | 'createdAt'> & {
