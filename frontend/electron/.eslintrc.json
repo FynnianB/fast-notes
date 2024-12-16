@@ -27,6 +27,7 @@
     "boundaries"
   ],
   "rules": {
+    "object-shorthand": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "react/jsx-one-expression-per-line": "off",
     "jsx-a11y/click-events-have-key-events": "off",

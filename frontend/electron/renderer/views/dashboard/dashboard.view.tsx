@@ -1,5 +1,5 @@
-import { Rnd, RndResizeCallback } from 'react-rnd';
-import style from './dashboard.module.less'
+import type { RndResizeCallback } from 'react-rnd';
+import { Rnd } from 'react-rnd';
 import {
     selectDashboardUserPreferences,
     setDashboardNoteDrawerExpanded,
@@ -13,6 +13,7 @@ import NotesDrawerExpansionToggle
     from '@modules/dashboard/components/notes-drawer-expansion-toggle/notes-drawer-expansion-toggle.component';
 import classNames from 'classnames';
 import Canvas from '@modules/dashboard/components/canvas/canvas.component';
+import style from './dashboard.module.less';
 
 const DashboardView = () => {
     const dispatch = useAppDispatch();
@@ -23,15 +24,15 @@ const DashboardView = () => {
     const handleResizeStop: RndResizeCallback = (_e, _direction, ref) => {
         const width = Math.round(+ref.style.width.replaceAll('%', ''));
         dispatch(setDashboardNoteDrawerWidth(width));
-    }
+    };
 
     const handleToggleExpansion = () => {
         dispatch(setDashboardNoteDrawerExpanded(!noteDrawerExpanded));
-    }
+    };
 
     useEffect(() => {
         dispatch(fetchNotes());
-        setIsDragging(false)
+        setIsDragging(false);
     }, []);
 
     return (
@@ -39,7 +40,7 @@ const DashboardView = () => {
             <div className={style.notesDrawerOverlay} ref={overlayRef}>
                 <div className={classNames(style.notesDrawerExpandable, { [style.expanded]: noteDrawerExpanded && !isDragging })}>
                     <Rnd
-                        size={{ width: noteDrawerWidth + '%', height: '100%' }}
+                        size={{ width: `${noteDrawerWidth}%`, height: '100%' }}
                         minWidth="20%"
                         maxWidth="70%"
                         enableResizing={{
@@ -50,7 +51,7 @@ const DashboardView = () => {
                             topRight: false,
                             bottomRight: false,
                             bottomLeft: false,
-                            topLeft: false
+                            topLeft: false,
                         }}
                         disableDragging={true}
                         className={style.notesDrawer}
@@ -62,7 +63,8 @@ const DashboardView = () => {
                             onDragStop={() => setIsDragging(false)}
                         />
                         <NotesDrawerExpansionToggle
-                            expanded={noteDrawerExpanded} onToggle={handleToggleExpansion}
+                            expanded={noteDrawerExpanded}
+                            onToggle={handleToggleExpansion}
                         />
                     </Rnd>
                 </div>
@@ -70,6 +72,6 @@ const DashboardView = () => {
             <Canvas />
         </>
     );
-}
+};
 
 export default DashboardView;

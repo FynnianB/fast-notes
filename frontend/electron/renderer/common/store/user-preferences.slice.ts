@@ -1,8 +1,9 @@
-import { Action, createAsyncThunk, createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
+import type { Action, Middleware, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { fetchUserPreferences, updateUserPreferences } from '@common/api/user-preferences.api';
-import { UserPreferencesStore } from '@common/@types/store.types';
+import type { UserPreferencesStore } from '@common/@types/store.types';
 import debounce from 'lodash.debounce';
-import { RootState } from '../../store';
+import type { RootState } from '../../store';
 
 const initialState: UserPreferencesStore = {
     dashboard: {
@@ -12,8 +13,8 @@ const initialState: UserPreferencesStore = {
         canvasOffset: {
             x: 0,
             y: 0,
-        }
-    }
+        },
+    },
 };
 
 export const loadUserPreferences = createAsyncThunk(
@@ -21,7 +22,7 @@ export const loadUserPreferences = createAsyncThunk(
     async () => {
         const preferences = await fetchUserPreferences();
         return preferences as UserPreferencesStore;
-    }
+    },
 );
 
 const debouncedUpdateUserPreferences = debounce(updateUserPreferences, 1000);
@@ -36,7 +37,7 @@ export const userPreferencesMiddleware: Middleware = (storeApi) => (next) => asy
     }
 
     return result;
-}
+};
 
 const userPreferencesSlice = createSlice({
     name: 'userPreferences',
@@ -53,12 +54,10 @@ const userPreferencesSlice = createSlice({
         },
         setDashboardCanvasOffset(state, action: PayloadAction<{ x: number, y: number }>) {
             state.dashboard.canvasOffset = action.payload;
-        }
+        },
     },
     extraReducers: (builder) => {
-        builder.addCase(loadUserPreferences.fulfilled, (_state, action) => {
-            return action.payload;
-        });
+        builder.addCase(loadUserPreferences.fulfilled, (_state, action) => action.payload);
     },
 });
 
@@ -66,7 +65,7 @@ export const {
     setDashboardNoteDrawerWidth,
     setDashboardNoteDrawerExpanded,
     setDashboardCanvasZoom,
-    setDashboardCanvasOffset
+    setDashboardCanvasOffset,
 } = userPreferencesSlice.actions;
 
 export const selectDashboardUserPreferences = (state: RootState) => state.userPreferences.dashboard;

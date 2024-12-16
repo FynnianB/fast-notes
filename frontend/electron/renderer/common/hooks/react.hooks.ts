@@ -1,6 +1,7 @@
-import { Dispatch, MutableRefObject, SetStateAction, useEffect, useRef, useState } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '@common/hooks/store.hooks';
-import { RootState } from '../../store';
+import type { RootState } from '../../store';
 
 export function useStateRef<T>(initialValue: T): [T, Dispatch<SetStateAction<T>>, MutableRefObject<T>] {
     const [value, setValue] = useState<T>(initialValue);
@@ -15,7 +16,7 @@ export function useStateRef<T>(initialValue: T): [T, Dispatch<SetStateAction<T>>
 }
 
 export function useAppSelectorRef<TSelected>(
-    selector: (state: RootState) => TSelected
+    selector: (state: RootState) => TSelected,
 ): [TSelected, MutableRefObject<TSelected>] {
     const selectedState = useAppSelector(selector);
 

@@ -2,7 +2,8 @@ import { Box } from '@radix-ui/themes';
 import { selectPlacedNoteItems } from '@common/store/selectors/select-note-items.selector';
 import { useAppDispatch, useAppSelector } from '@common/hooks/store.hooks';
 import MovableNoteCard from '@modules/dashboard/components/movable-note-card/movable-note-card.component';
-import React, { useRef, useState } from 'react';
+import type React from 'react';
+import { useRef, useState } from 'react';
 import {
     selectDashboardUserPreferences,
     setDashboardCanvasOffset,
@@ -38,7 +39,6 @@ const Canvas = () => {
 
     const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
         const zoomDelta = 1 + (event.deltaY * -0.001);
-        console.log(event.deltaY);
         zoomCanvas(event.nativeEvent.offsetX, event.nativeEvent.offsetY, zoomDelta);
     };
 
@@ -57,7 +57,7 @@ const Canvas = () => {
             const newOffset = {
                 x: startOffset.current.x + dx,
                 y: startOffset.current.y + dy,
-            }
+            };
             setOffset(newOffset);
             dispatch(setDashboardCanvasOffset(newOffset));
         }
@@ -81,6 +81,7 @@ const Canvas = () => {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
+            role="none"
         >
             <Box
                 className="canvas-frame"
@@ -90,12 +91,12 @@ const Canvas = () => {
                     position: 'relative',
                 }}
             >
-                {notes.map(note => (
-                    <MovableNoteCard note={note} key={note.uuid} zoom={zoom}/>
+                {notes.map((note) => (
+                    <MovableNoteCard note={note} key={note.uuid} zoom={zoom} />
                 ))}
             </Box>
         </div>
-    )
+    );
 };
 
 export default Canvas;

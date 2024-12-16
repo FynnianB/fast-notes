@@ -1,9 +1,11 @@
-import { Note } from '../../../../../@types/notes.type';
-import { Box, Card, Flex, Inset, Text } from '@radix-ui/themes';
-import style from './note-card.module.less';
+import {
+ Box, Card, Flex, Inset, Text,
+} from '@radix-ui/themes';
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { RxDoubleArrowDown, RxDoubleArrowUp } from 'react-icons/rx';
+import style from './note-card.module.less';
+import type { Note } from '../../../../../@types/notes.type';
 
 interface NoteCardProps {
     note: Note;
@@ -35,8 +37,11 @@ const NoteCard = ({
             <Inset>
                 <Box className={classNames(style.content, { [style.expanded]: isExpanded })} ref={contentRef}>
                     {note.content}
-                    {!isExpanded && isExpandable && (<div className={style.expansionTrigger} onClick={() => setIsExpanded(true)}><RxDoubleArrowDown size={20}/></div>)}
-                    {isExpanded && isExpandable && (<div className={style.reductionTrigger} onClick={() => setIsExpanded(false)}><RxDoubleArrowUp size={20}/></div>)}
+                    {isExpandable && (
+                        <div className={style.expansionTrigger} onClick={() => setIsExpanded(!isExpanded)} role="button" tabIndex={0}>
+                            {isExpanded ? <RxDoubleArrowUp size={20} /> : <RxDoubleArrowDown size={20} />}
+                        </div>
+                    )}
                 </Box>
                 <Flex justify="between" className={style.footer}>
                     <Text color={note.category ? 'indigo' : 'gray'} size="1" weight="medium">

@@ -1,7 +1,7 @@
-import style from './notes-drawer-expansion-toggle.module.less';
 import { RxChevronRight } from 'react-icons/rx';
-import React from 'react';
+import type React from 'react';
 import classNames from 'classnames';
+import style from './notes-drawer-expansion-toggle.module.less';
 
 interface NotesDrawerExpansionToggleProps {
     expanded: boolean;
@@ -10,10 +10,10 @@ interface NotesDrawerExpansionToggleProps {
 
 const NotesDrawerExpansionToggle = ({
     expanded,
-    onToggle
+    onToggle,
 }: NotesDrawerExpansionToggleProps) => (
     <div className={classNames(style.component, { [style.expanded]: expanded })}>
-        <RxChevronRight size={20} className={style.toggle} onClick={onToggle}/>
+        <RxChevronRight size={20} className={style.toggle} onClick={onToggle} />
     </div>
 );
 

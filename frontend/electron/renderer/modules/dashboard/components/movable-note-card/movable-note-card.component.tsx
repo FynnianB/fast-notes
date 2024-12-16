@@ -1,11 +1,12 @@
-import { Note } from '../../../../../@types/notes.type';
 import { useState } from 'react';
 import NoteCard from '@modules/dashboard/components/note-card/note-card.component';
-import { DraggableData, Rnd } from 'react-rnd';
-import { DraggableEvent } from 'react-draggable';
+import type { DraggableData } from 'react-rnd';
+import { Rnd } from 'react-rnd';
+import type { DraggableEvent } from 'react-draggable';
 import { moveNote } from '@common/store/notes.slice';
 import * as notesApi from '@common/api/notes.api';
 import { useAppDispatch } from '@common/hooks/store.hooks';
+import type { Note } from '../../../../../@types/notes.type';
 
 interface DraggableNoteCardProps {
     note: Note;
@@ -45,6 +46,6 @@ const MovableNoteCard = ({
             <NoteCard note={note} />
         </Rnd>
     );
-}
+};
 
 export default MovableNoteCard;

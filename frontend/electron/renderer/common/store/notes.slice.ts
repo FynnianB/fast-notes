@@ -1,7 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NotesStore } from '@common/@types/store.types';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { NotesStore } from '@common/@types/store.types';
 import * as notesApi from '@common/api/notes.api';
-import { Note } from '../../../@types/notes.type';
+import type { Note } from '../../../@types/notes.type';
 
 const initialState: NotesStore = {
     noteItems: [],
@@ -9,15 +10,13 @@ const initialState: NotesStore = {
 
 export const fetchNotes = createAsyncThunk(
     'notes/fetch',
-    async () => {
-        return notesApi.fetchNotes();
-    }
+    async () => notesApi.fetchNotes(),
 );
 
 type MoveNotePayload = {
     noteUuid: Note['uuid'];
     position: { x: number; y: number };
-}
+};
 
 const notesSlice = createSlice({
     name: 'notes',
@@ -37,7 +36,7 @@ const notesSlice = createSlice({
                 x: action.payload.position.x,
                 y: action.payload.position.y,
             };
-        }
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchNotes.fulfilled, (state, action) => {

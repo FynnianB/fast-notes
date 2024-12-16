@@ -5,12 +5,12 @@ import { HashRouter, Route, Routes } from 'react-router';
 import DashboardView from '@views/dashboard/dashboard.view';
 import { Theme } from '@radix-ui/themes';
 import { Provider as ReduxProvider } from 'react-redux';
-import store from '../store';
 import { loadUserPreferences } from '@common/store/user-preferences.slice';
 import '@radix-ui/themes/styles.css';
 import '../../radix-overrides.css';
 import { fetchNotes } from '@common/store/notes.slice';
 import { handleIpc as handleNotesIpc } from '@common/api/notes.api';
+import store from '../store';
 
 const container = document.getElementById('root');
 if (container === null) {

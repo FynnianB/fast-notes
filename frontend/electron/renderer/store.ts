@@ -7,8 +7,7 @@ const store = configureStore({
         userPreferences: userPreferencesReducer,
         notes: notesReducer,
     },
-    middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware({ serializableCheck: false })
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false })
                 .concat(userPreferencesMiddleware),
 });
 

@@ -1,7 +1,9 @@
-import style from './overlay-input.module.less';
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import type { FormEvent } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { addNote, closeOverlay, increaseOverlayHeightBy } from '@modules/overlay/api/overlay.api';
 import { Button, TextArea } from '@radix-ui/themes';
+import style from './overlay-input.module.less';
 
 const OverlayInput = () => {
     const [note, setNote] = useState('');
@@ -35,7 +37,7 @@ const OverlayInput = () => {
                 setHeight(newHeight);
             }
         }
-    }
+    };
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -60,7 +62,7 @@ const OverlayInput = () => {
                 <Button color="indigo" size="2" variant="soft" radius="large" onClick={handleSubmit} loading={loading}>Save</Button>
             </div>
         </div>
-    )
+    );
 };
 
 export default OverlayInput;

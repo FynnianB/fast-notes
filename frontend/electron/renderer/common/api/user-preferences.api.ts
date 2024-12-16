@@ -1,9 +1,9 @@
-import { UserPreferences } from '../../../@types/userPreferences.type';
+import type { UserPreferences } from '../../../@types/userPreferences.type';
 
 export async function updateUserPreferences(preferences: UserPreferences) {
-    return await window.electronApi.updateUserPreferences(preferences);
+    return window.electronApi.updateUserPreferences(preferences);
 }
 
 export async function fetchUserPreferences(): Promise<UserPreferences> {
-    return await window.electronApi.getUserPreferences();
+    return window.electronApi.getUserPreferences();
 }
