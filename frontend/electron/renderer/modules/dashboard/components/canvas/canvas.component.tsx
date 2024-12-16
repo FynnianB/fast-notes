@@ -37,7 +37,8 @@ const Canvas = () => {
     };
 
     const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-        const zoomDelta = event.deltaY > 0 ? 0.9 : 1.1;
+        const zoomDelta = 1 + (event.deltaY * -0.001);
+        console.log(event.deltaY);
         zoomCanvas(event.nativeEvent.offsetX, event.nativeEvent.offsetY, zoomDelta);
     };
 

@@ -1,20 +1,22 @@
 import style from './overlay-input.module.less';
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { addNote, closeOverlay, increaseOverlayHeightBy } from '@modules/overlay/api/overlay.api';
-import { TextArea } from '@radix-ui/themes';
+import { Button, TextArea } from '@radix-ui/themes';
 
 const OverlayInput = () => {
     const [note, setNote] = useState('');
     const [height, setHeight] = useState(0);
+    const [loading, setLoading] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleSubmit = async () => {
         if (note.trim().length <= 0) return;
-        console.log('Saving note:', note);
+        setLoading(true);
         const success = await addNote(note);
         if (success) {
             await closeOverlay();
         }
+        setLoading(false);
     };
 
     const handleKeyUp = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -42,17 +44,22 @@ const OverlayInput = () => {
     }, []);
 
     return (
-        <TextArea
-            placeholder="Enter your note here..."
-            value={note}
-            variant="surface"
-            onInput={handleInput}
-            onKeyUp={handleKeyUp}
-            className={style.component}
-            autoFocus
-            size="3"
-            ref={textareaRef}
-        />
+        <div className={style.component}>
+            <TextArea
+                placeholder="Enter your note here..."
+                value={note}
+                variant="surface"
+                onInput={handleInput}
+                onKeyUp={handleKeyUp}
+                autoFocus
+                size="3"
+                ref={textareaRef}
+                className={style.textArea}
+            />
+            <div className={style.saveButton}>
+                <Button color="indigo" size="2" variant="soft" radius="large" onClick={handleSubmit} loading={loading}>Save</Button>
+            </div>
+        </div>
     )
 };
 
