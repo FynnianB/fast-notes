@@ -21,6 +21,26 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
+    rules: {
+      "@typescript-eslint/no-restricted-imports": [
+        "warn",
+        {
+          "name": "react-redux",
+          "importNames": ["useSelector", "useDispatch"],
+          "message": "Use typed hooks `useAppDispatch` and `useAppSelector` instead."
+        }
+      ],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+          "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ],
+      "no-console": "warn",
+    },
     settings: {
       react: {
         version: "^18.3.1",
@@ -48,12 +68,12 @@ export default [
         {
           mode: "full",
           type: "shared",
-          pattern: ["renderer/common/**/*"]
+          pattern: ["renderer/common/**/*", "renderer/store.ts"]
         },
         {
           mode: "full",
           type: "module",
-          capture: ["moduleName"],
+          capture: ["moduleName", "_", "fileName"],
           pattern: ["renderer/modules/*/**/*"]
         },
         {
@@ -64,7 +84,7 @@ export default [
         },
         {
           mode: "full",
-          type: "app",
+          type: "view",
           capture: ["_", "fileName"],
           pattern: ["renderer/views/**/*"]
         },
@@ -84,23 +104,26 @@ export default [
           default: "disallow",
           rules: [
             {
-              from: ["shared"],
+              // allow shared to be imported from everywhere
+              from: ["shared", "view", "entrypoint", "module"],
               allow: ["shared"]
             },
             {
+              // allow imports from the same module
               from: ["module"],
               allow: [
-                "shared",
                 ["module", { "moduleName": "${from.moduleName}" }]
               ]
             },
             {
-              from: ["app", "entrypoint", "neverImport"],
-              allow: ["shared", "module"]
+              // only allow views from entrypoints
+              from: ["entrypoint"],
+              allow: ["view"]
             },
             {
-              from: ["app", "entrypoint"],
-              allow: ["app"]
+              // allow views to import views and modules
+              from: ["view"],
+              allow: ["view", "module"]
             }
           ]
         }

@@ -1,0 +1,27 @@
+.component {
+  background-color: var(--gray-2);
+  height: 100%;
+  position: relative;
+  overflow-x: hidden;
+
+  .cardWrapper {
+    cursor: grab;
+    width: fit-content;
+
+    &.currentlyDragged {
+      opacity: 0;
+    }
+  }
+}
+
+.portal {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  z-index: 100;
+
+  .portalNoteCard {
+    position: absolute;
+    cursor: grabbing;
+  }
+}

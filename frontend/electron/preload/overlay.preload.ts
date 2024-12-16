@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
-contextBridge.exposeInMainWorld('electronApi', {
-    addNote: (content: string) => ipcRenderer.invoke('add-note', content),
-    closeOverlay: () => ipcRenderer.invoke('close-overlay')
+contextBridge.exposeInMainWorld('overlayApi', {
+    addNote: (content: string) => ipcRenderer.invoke('overlay/add-note', content),
+    closeOverlay: () => ipcRenderer.invoke('overlay/close'),
+    increaseOverlayHeightBy: (height: number) => ipcRenderer.invoke('overlay/increase-height', height),
 });

@@ -1,0 +1,152 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "@typescript-eslint",
+    "jsx-a11y",
+    "import",
+    "boundaries"
+  ],
+  "rules": {
+    "object-shorthand": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "react/jsx-one-expression-per-line": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "import/no-cycle": "off",
+    "react/require-default-props": "off",
+    "no-param-reassign": "off",
+    "import/prefer-default-export": "off",
+    "linebreak-style": "off",
+    "react/jsx-indent": "off",
+    "react/jsx-indent-props": "off",
+    "react/jsx-boolean-value": "off",
+    "indent": "off",
+    "@typescript-eslint/indent": "off",
+    "max-len": "off",
+    "react/jsx-fragments": "off",
+    "react/prop-types": "off",
+    "react/jsx-props-no-spreading": "off",
+    "class-methods-use-this": "off",
+    "react/function-component-definition": "off",
+    "react/state-in-constructor": "off",
+    "no-shadow": "off",
+    "arrow-body-style": ["error", "as-needed"],
+    "@typescript-eslint/no-shadow": "error",
+    "no-undef": "off",
+    "react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["**/*.test.{js,ts,tsx}", "**/setupTests.{js,ts}"] }
+    ],
+    "@typescript-eslint/no-restricted-imports": [
+      "warn",
+      {
+        "name": "react-redux",
+        "importNames": ["useSelector", "useDispatch"],
+        "message": "Use typed hooks `useAppDispatch` and `useAppSelector` instead."
+      }
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "no-console": "warn",
+    "boundaries/no-unknown": ["error"],
+    "boundaries/no-unknown-files": ["error"],
+    "boundaries/element-types": [
+      "error",
+      {
+        "default": "disallow",
+        "rules": [
+          {
+            "from": ["shared", "view", "entrypoint", "module"],
+            "allow": ["shared"]
+          },
+          {
+            "from": ["module"],
+            "allow": [["module", { "moduleName": "${from.moduleName}" }]]
+          },
+          {
+            "from": ["entrypoint"],
+            "allow": ["view"]
+          },
+          {
+            "from": ["view"],
+            "allow": ["view", "module"]
+          }
+        ]
+      }
+    ]
+  },
+  "settings": {
+    "react": {
+      "version": "^18.3.1"
+    },
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["@common", "./renderer/common"],
+          ["@modules", "./renderer/modules"],
+          ["@views", "./renderer/views"]
+        ]
+      },
+      "node": true,
+      "typescript": true
+    },
+    "boundaries/include": ["renderer/**/*"],
+    "boundaries/elements": [
+      {
+        "mode": "full",
+        "type": "shared",
+        "pattern": ["renderer/common/**/*", "renderer/store.ts"]
+      },
+      {
+        "mode": "full",
+        "type": "module",
+        "capture": ["moduleName", "_", "fileName"],
+        "pattern": ["renderer/modules/*/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "entrypoint",
+        "capture": ["_", "fileName"],
+        "pattern": ["renderer/application-entrypoints/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "view",
+        "capture": ["_", "fileName"],
+        "pattern": ["renderer/views/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "neverImport",
+        "pattern": ["renderer/*"]
+      }
+    ]
+  }
+}

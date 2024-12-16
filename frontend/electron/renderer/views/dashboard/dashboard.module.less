@@ -1,0 +1,25 @@
+.notesDrawerOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+  overflow: hidden;
+
+  .notesDrawerExpandable {
+    width: 0;
+    height: 100%;
+    transition: width 200ms ease-in-out;
+    position: relative;
+
+    &.expanded {
+      width: 100%;
+    }
+
+    .notesDrawer {
+      box-shadow: var(--shadow-3);
+      pointer-events: auto;
+      isolation: isolate;
+      position: relative;
+    }
+  }
+}

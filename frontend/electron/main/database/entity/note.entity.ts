@@ -3,8 +3,11 @@ import { NoteSyncStatus } from '../../enumerations/NoteSyncStatus.enumation';
 export interface Note {
     uuid: string;
     content: string;
-    lastModified: Date;
-    categoryId: string|null;
-    syncStatus: NoteSyncStatus;
-    isDeleted: boolean;
+    last_modified: string;
+    created_at: string;
+    category_id: string|null;
+    sync_status: NoteSyncStatus;
+    is_deleted: boolean;
+    x: number|null;
+    y: number|null;
 }

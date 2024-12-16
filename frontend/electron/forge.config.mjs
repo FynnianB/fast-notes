@@ -10,13 +10,23 @@ const config = {
   packagerConfig: {
     name: 'Fast Notes',
     asar: true,
+    icon: './public/assets/icons/fast-notes-icon',
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}, ['win32']),
+    new MakerSquirrel({ setupIcon: './public/assets/icons/fast-notes-icon.ico', icon: './public/assets/icons/fast-notes-icon.ico' }, ['win32']),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}, ['linux']),
-    new MakerDeb({ options: { maintainer: 'Fynnian Brosius', homepage: 'https://fast-notes.fynnian-brosius.de'}}, ['linux'])
+    new MakerRpm({ icon: './public/assets/icons/fast-notes-icon.ico'}, ['linux']),
+    new MakerDeb(
+        {
+          options: {
+            maintainer: 'Fynnian Brosius',
+            homepage: 'https://fast-notes.fynnian-brosius.de',
+            icon: './public/assets/icons/fast-notes-icon.ico',
+          }
+        },
+        ['linux']
+    ),
   ],
   plugins: [
     new VitePlugin({
