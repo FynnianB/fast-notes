@@ -27,6 +27,7 @@
     "boundaries"
   ],
   "rules": {
+    "object-curly-newline": "off",
     "object-shorthand": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "react/jsx-one-expression-per-line": "off",

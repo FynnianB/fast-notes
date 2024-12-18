@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import { Migration } from './entity/migration.entity';
 import path from 'path';
 import { pathToFileURL } from 'url';
+import logger from '../services/logger.service';
 
 export async function executeMigrations(db: Database.Database) {
     const appliedMigrations: string[] = getAppliedMigrations(db);
@@ -12,15 +13,15 @@ export async function executeMigrations(db: Database.Database) {
         if (appliedMigrations.includes(filename)) continue;
 
         appliedCount++;
-        console.log(`Applying migration: ${filename}`);
-        console.log(sql);
+        logger.info(`Applying migration: ${filename}`);
+        logger.info(sql);
         db.exec(sql);
         db.prepare(`INSERT INTO migrations (filename, applied_at) VALUES (?, datetime('now'))`).run(filename);
     }
     if (appliedCount === 0) {
-        console.log('No new migrations found.');
+        logger.info('No new migrations found.');
     } else {
-        console.log(`${appliedCount} migrations successfully applied.`);
+        logger.info(`${appliedCount} migrations successfully applied.`);
     }
 }
 
