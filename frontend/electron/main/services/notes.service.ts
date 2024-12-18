@@ -1,6 +1,7 @@
 import { getNotes, insertNote } from '../database/repository/notes.repository';
 import { NoteSyncStatus } from '../enumerations/NoteSyncStatus.enumation';
 import { invokeUpdateNotesEvent } from '../ipc/notesIpc';
+import logger from './logger.service';
 
 export const addNote = (content: string): boolean => {
     try {
@@ -21,7 +22,7 @@ export const addNote = (content: string): boolean => {
         // todo: send notification
         return true;
     } catch (e: unknown) {
-        console.error(e);
+        logger.error('Error while adding note', e);
         return false;
     }
 }
