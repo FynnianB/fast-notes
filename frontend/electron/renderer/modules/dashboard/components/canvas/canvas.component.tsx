@@ -67,6 +67,16 @@ const Canvas = () => {
         setIsPanning(false);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === '+' && e.ctrlKey) {
+            e.preventDefault();
+            zoomCanvas(window.innerWidth / 2, window.innerHeight / 2, 1.2);
+        } else if (e.key === '-' && e.ctrlKey) {
+            e.preventDefault();
+            zoomCanvas(window.innerWidth / 2, window.innerHeight / 2, 0.8);
+        }
+    };
+
     return (
         <div
             style={{
@@ -75,13 +85,16 @@ const Canvas = () => {
                 position: 'relative',
                 overflow: 'hidden',
                 cursor: isPanning ? 'grab' : 'default',
+                outline: 'none',
             }}
             id="dashboard-canvas"
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
+            onKeyDown={handleKeyDown}
             role="none"
+            tabIndex={-1}
         >
             <Box
                 className="canvas-frame"
