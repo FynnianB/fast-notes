@@ -1,6 +1,6 @@
 import { Box } from '@radix-ui/themes';
-import { selectPlacedNoteItems } from '@common/store/selectors/select-note-items.selector';
-import { useAppDispatch, useAppSelector } from '@common/hooks/store.hooks';
+import { selectVisibleNoteItems } from '@common/store/selectors/select-note-items.selector';
+import { useAppSelector } from '@common/hooks/store.hooks';
 import CanvasNoteCard from '@modules/dashboard/components/canvas-note-card/canvas-note-card.component';
 import type React from 'react';
 import { useRef, useState } from 'react';
@@ -9,10 +9,20 @@ import {
     setDashboardCanvasOffset,
     setDashboardCanvasZoom,
 } from '@common/store/user-preferences.slice';
+import debounce from 'lodash.debounce';
+import store from '../../../../store';
+
+const debouncedHandlePanning = debounce((newOffset) => {
+    store.dispatch(setDashboardCanvasOffset(newOffset));
+}, 50);
+
+const debouncedHandleZooming = debounce((newOffset, newZoom) => {
+    store.dispatch(setDashboardCanvasOffset(newOffset));
+    store.dispatch(setDashboardCanvasZoom(newZoom));
+}, 50);
 
 const Canvas = () => {
-    const dispatch = useAppDispatch();
-    const notes = useAppSelector(selectPlacedNoteItems);
+    const notes = useAppSelector(selectVisibleNoteItems);
     const { canvasZoom, canvasOffset } = useAppSelector(selectDashboardUserPreferences);
     const [zoom, setZoom] = useState(canvasZoom);
     const [offset, setOffset] = useState(canvasOffset);
@@ -34,8 +44,7 @@ const Canvas = () => {
         };
         setOffset(newOffset);
         setZoom(newZoom);
-        dispatch(setDashboardCanvasOffset(newOffset));
-        dispatch(setDashboardCanvasZoom(newZoom));
+        debouncedHandleZooming(newOffset, newZoom);
     };
 
     const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
@@ -44,7 +53,7 @@ const Canvas = () => {
             return;
         }
 
-        const zoomDelta = 1 + (event.deltaY * -0.001);
+        const zoomDelta = 1 + (event.deltaY * -0.002);
         zoomCanvas(event.nativeEvent.offsetX, event.nativeEvent.offsetY, zoomDelta);
     };
 
@@ -65,7 +74,7 @@ const Canvas = () => {
                 y: startOffset.current.y + dy,
             };
             setOffset(newOffset);
-            dispatch(setDashboardCanvasOffset(newOffset));
+            debouncedHandlePanning(newOffset);
         }
     };
 
