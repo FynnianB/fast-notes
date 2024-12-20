@@ -37,6 +37,13 @@ export function updateNote(model: NoteModel): void {
 }
 
 export function getNotes(): NoteModel[] {
+    const result = sqlite.all(
+        'SELECT * FROM note LEFT JOIN category ON note.category_id = category.uuid WHERE note.is_deleted = 0 ORDER BY note.uuid DESC',
+    ) as { note: NoteEntity, category: Category }[];
+    return result.map(entity => notesMapper.mapEntityToModel(entity.note, entity.category));
+}
+
+export function getAllNotes(): NoteModel[] {
     const result = sqlite.all('SELECT * FROM note LEFT JOIN category ON note.category_id = category.uuid ORDER BY note.uuid DESC') as { note: NoteEntity, category: Category }[];
     return result.map(entity => notesMapper.mapEntityToModel(entity.note, entity.category));
 }

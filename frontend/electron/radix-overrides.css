@@ -9,3 +9,9 @@
     --cursor-slider-thumb-active: grabbing;
     --cursor-switch: pointer;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+    .rt-BaseDialogOverlay[data-state='closed']::before {
+        animation-fill-mode: forwards;
+    }
+}

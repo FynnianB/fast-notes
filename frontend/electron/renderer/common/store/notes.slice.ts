@@ -13,11 +13,6 @@ export const fetchNotes = createAsyncThunk(
     async () => notesApi.fetchNotes(),
 );
 
-type MoveNotePayload = {
-    noteUuid: Note['uuid'];
-    position: { x: number; y: number };
-};
-
 const notesSlice = createSlice({
     name: 'notes',
     initialState,
@@ -29,13 +24,17 @@ const notesSlice = createSlice({
                 createdAt: note.createdAt.toISOString(),
             }));
         },
-        moveNote: (state, action: PayloadAction<MoveNotePayload>) => {
-            const noteIndex = state.noteItems.findIndex((note) => note.uuid === action.payload.noteUuid);
+        updateNote: (state, action: PayloadAction<Note>) => {
+            const noteIndex = state.noteItems.findIndex((note) => note.uuid === action.payload.uuid);
             state.noteItems[noteIndex] = {
-                ...state.noteItems[noteIndex],
-                x: action.payload.position.x,
-                y: action.payload.position.y,
+                ...action.payload,
+                lastModified: action.payload.lastModified.toISOString(),
+                createdAt: action.payload.createdAt.toISOString(),
             };
+        },
+        deleteNote: (state, action: PayloadAction<string>) => {
+            const noteUuid = action.payload;
+            state.noteItems = state.noteItems.filter((note) => note.uuid !== noteUuid);
         },
     },
     extraReducers: (builder) => {
@@ -49,6 +48,6 @@ const notesSlice = createSlice({
     },
 });
 
-export const { setNoteItems, moveNote } = notesSlice.actions;
+export const { setNoteItems, updateNote, deleteNote } = notesSlice.actions;
 
 export default notesSlice.reducer;

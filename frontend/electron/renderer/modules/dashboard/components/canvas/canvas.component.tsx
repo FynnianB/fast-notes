@@ -1,7 +1,7 @@
 import { Box } from '@radix-ui/themes';
 import { selectPlacedNoteItems } from '@common/store/selectors/select-note-items.selector';
 import { useAppDispatch, useAppSelector } from '@common/hooks/store.hooks';
-import MovableNoteCard from '@modules/dashboard/components/movable-note-card/movable-note-card.component';
+import CanvasNoteCard from '@modules/dashboard/components/canvas-note-card/canvas-note-card.component';
 import type React from 'react';
 import { useRef, useState } from 'react';
 import {
@@ -19,6 +19,7 @@ const Canvas = () => {
     const [isPanning, setIsPanning] = useState(false);
     const startOffset = useRef({ x: 0, y: 0 });
     const startMouse = useRef({ x: 0, y: 0 });
+    const canvasRef = useRef<HTMLDivElement>(null);
 
     const zoomCanvas = (mouseX: number, mouseY: number, zoomDelta: number) => {
         const mouseCanvasX = (mouseX - offset.x) / zoom;
@@ -38,6 +39,11 @@ const Canvas = () => {
     };
 
     const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+        // Ensure the event only fires if the cursor is directly over the background
+        if (event.target !== event.currentTarget) {
+            return;
+        }
+
         const zoomDelta = 1 + (event.deltaY * -0.001);
         zoomCanvas(event.nativeEvent.offsetX, event.nativeEvent.offsetY, zoomDelta);
     };
@@ -68,6 +74,8 @@ const Canvas = () => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (document.activeElement !== canvasRef.current) return;
+
         if (e.key === '+' && e.ctrlKey) {
             e.preventDefault();
             zoomCanvas(window.innerWidth / 2, window.innerHeight / 2, 1.2);
@@ -79,6 +87,7 @@ const Canvas = () => {
 
     return (
         <div
+            ref={canvasRef}
             style={{
                 minWidth: '100%',
                 minHeight: '100%',
@@ -93,8 +102,8 @@ const Canvas = () => {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onKeyDown={handleKeyDown}
-            role="none"
-            tabIndex={-1}
+            role="button"
+            tabIndex={0}
         >
             <Box
                 className="canvas-frame"
@@ -105,7 +114,7 @@ const Canvas = () => {
                 }}
             >
                 {notes.map((note) => (
-                    <MovableNoteCard note={note} key={note.uuid} zoom={zoom} />
+                    <CanvasNoteCard note={note} key={note.uuid} zoom={zoom} />
                 ))}
             </Box>
         </div>

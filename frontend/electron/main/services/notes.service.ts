@@ -1,12 +1,13 @@
-import { getNotes, insertNote } from '../database/repository/notes.repository';
+import * as NotesRepository from '../database/repository/notes.repository';
 import { NoteSyncStatus } from '../enumerations/NoteSyncStatus.enumation';
 import { invokeUpdateNotesEvent } from '../ipc/notesIpc';
 import logger from './logger.service';
+import { Note as NoteModel } from '../../@types/notes.type';
 
 export const addNote = (content: string): boolean => {
     try {
         const date = new Date();
-        insertNote({
+        NotesRepository.insertNote({
             content: content,
             lastModified: date,
             createdAt: date,
@@ -16,7 +17,7 @@ export const addNote = (content: string): boolean => {
             x: null,
             y: null,
         });
-        const notes = getNotes();
+        const notes = NotesRepository.getNotes();
         invokeUpdateNotesEvent(notes);
         // todo: Syncing logic
         // todo: send notification
@@ -25,4 +26,10 @@ export const addNote = (content: string): boolean => {
         logger.error('Error while adding note', e);
         return false;
     }
+}
+
+export const updateNote = (model: NoteModel): void => {
+    model.lastModified = new Date();
+    NotesRepository.updateNote(model);
+    // todo: Syncing logic
 }

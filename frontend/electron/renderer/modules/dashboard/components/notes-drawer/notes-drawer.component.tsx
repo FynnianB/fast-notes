@@ -24,7 +24,7 @@ const NotesDrawer = ({
     onDragStart = () => {},
     onDragStop = () => {},
 }: NotesDrawerProps) => {
-    const { moveNote } = useCanvasService();
+    const { moveNoteFromDrawerToCanvas } = useCanvasService();
     const notes = useAppSelector(selectUnplacedNoteItems);
     const [draggingNote, setDraggingNote, draggingNoteRef] = useStateRef<Note | null>(null);
     const [, setMouseOffset, mouseOffsetRef] = useStateRef<{ x: number, y: number }>({ x: 0, y: 0 });
@@ -68,7 +68,7 @@ const NotesDrawer = ({
     const handleMouseUp = () => {
         if (draggingNoteRef.current === null) return;
 
-        moveNote(draggingNoteRef.current, draggingPositionRef.current);
+        moveNoteFromDrawerToCanvas(draggingNoteRef.current, draggingPositionRef.current);
         document.removeEventListener('mousemove', handleMouseMove);
         setDraggingNote(null);
         onDragStop();
