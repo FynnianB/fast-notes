@@ -14,12 +14,13 @@
     padding: 10px;
     overflow: hidden;
 
-    &.expanded {
+    &.fullHeight {
       max-height: none;
     }
 
-    .expansionTrigger {
+    .expansionTriggerZone {
       --trigger-bg-clr: var(--gray-2);
+      content: '';
       position: absolute;
       bottom: 0;
       left: 0;
@@ -29,14 +30,20 @@
       opacity: 0.9;
       cursor: pointer;
 
-      &:hover {
+      &:hover,
+      &:has(+ .expansionTrigger:hover) {
         --trigger-bg-clr: var(--gray-3);
       }
+    }
 
-      > * {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
+    .expansionTrigger {
+      position: absolute;
+      cursor: pointer;
+      bottom: 10px;
+      right: 10px;
+
+      &:hover {
+        transform: scale(1.1);
       }
     }
 

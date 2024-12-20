@@ -19,14 +19,14 @@ const NoteCard = ({
     ...cardProps
 }: NoteCardProps, ref: Ref<HTMLDivElement>) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [isExpandable, setIsExpandable] = useState(false);
+    const [isCollapsable, setIsCollapsable] = useState<boolean | undefined>(undefined);
     const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (contentRef.current) {
             const element = contentRef.current;
             const isOverflowing = element.scrollHeight > element.clientHeight;
-            setIsExpandable(isOverflowing);
+            setIsCollapsable(isOverflowing);
         }
     }, [note.content]);
 
@@ -38,17 +38,26 @@ const NoteCard = ({
             {...cardProps}
         >
             <Inset>
-                <Box className={classNames(style.content, { [style.expanded]: isExpanded })} ref={contentRef}>
+                <Box
+                    className={classNames(
+                        style.content,
+                        { [style.fullHeight]: isExpanded },
+                    )}
+                    ref={contentRef}
+                >
                     {note.content}
-                    {isExpandable && (
+                    {(isCollapsable === undefined || isCollapsable) && !isExpanded && (
                         <div
-                            className={style.expansionTrigger}
+                            className={style.expansionTriggerZone}
                             onClick={() => setIsExpanded(!isExpanded)}
                             role="button"
                             tabIndex={0}
-                        >
-                            {isExpanded ? <RxDoubleArrowUp size={20} /> : <RxDoubleArrowDown size={20} />}
-                        </div>
+                        />
+                    )}
+                    {isCollapsable && (
+                        isExpanded
+                            ? <RxDoubleArrowUp size={20} className={style.expansionTrigger} onClick={() => setIsExpanded(false)} />
+                            : <RxDoubleArrowDown size={20} className={style.expansionTrigger} onClick={() => setIsExpanded(true)} />
                     )}
                 </Box>
                 <Flex justify="between" className={classNames(style.footer, 'card-footer')}>
