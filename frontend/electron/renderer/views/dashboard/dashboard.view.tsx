@@ -8,7 +8,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@common/hooks/store.hooks';
 import NotesDrawer from '@modules/dashboard/components/notes-drawer/notes-drawer.component';
 import { useEffect, useRef, useState } from 'react';
-import { fetchNotes } from '@common/store/notes.slice';
+import { fetchNotes, setSelectedNoteIds } from '@common/store/notes.slice';
 import NotesDrawerExpansionToggle
     from '@modules/dashboard/components/notes-drawer-expansion-toggle/notes-drawer-expansion-toggle.component';
 import classNames from 'classnames';
@@ -32,6 +32,7 @@ const DashboardView = () => {
 
     useEffect(() => {
         dispatch(fetchNotes());
+        dispatch(setSelectedNoteIds([]));
         setIsDragging(false);
     }, []);
 

@@ -42,3 +42,8 @@ export const selectVisibleNoteItems = createAppSelector(
             && note.y <= visibleArea.y2);
     },
 );
+
+export const selectSelectedNoteItems = createAppSelector(
+    [selectPlacedNoteItems, (state) => state.notes.selectedNoteIds],
+    (noteItems, selectedNoteIds) => noteItems.filter((note) => selectedNoteIds.includes(note.uuid)),
+);

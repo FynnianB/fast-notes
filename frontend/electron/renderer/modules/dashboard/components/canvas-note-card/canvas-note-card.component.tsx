@@ -13,6 +13,7 @@ import { useCanvasService } from '@modules/dashboard/services/canvas.service';
 import NoteEditDialog from '@modules/dashboard/components/note-edit-dialog/note-edit-dialog.component';
 import { useAppSelector } from '@common/hooks/store.hooks';
 import { useSelectionService } from '@modules/dashboard/services/selection.service';
+import NoteSelectionPortal from '@modules/dashboard/components/note-selection-portal/note-selection-portal.component';
 import type { Note } from '../../../../../@types/notes.type';
 
 interface CanvasNoteCardProps {
@@ -21,6 +22,9 @@ interface CanvasNoteCardProps {
     isSelected: boolean;
     onSelectionToggle: (note: Note, selected: boolean) => void;
     onSelectSingle: (note: Note) => void;
+    isDraggingSelection: boolean;
+    onDraggingSelectionChange: (isDragging: boolean) => void;
+    canvasFrameRef: React.RefObject<HTMLDivElement>;
 }
 
 const CanvasNoteCard = ({
@@ -29,20 +33,51 @@ const CanvasNoteCard = ({
     isSelected,
     onSelectionToggle,
     onSelectSingle,
+    isDraggingSelection,
+    onDraggingSelectionChange,
+    canvasFrameRef,
 }: CanvasNoteCardProps) => {
     const { moveNote, deleteNote, moveNoteToDrawer, updateNoteContent } = useCanvasService();
-    const { deleteSelectedNotes, moveSelectedNotesToDrawer } = useSelectionService();
+    const { deleteSelectedNotes, moveSelectedNotesToDrawer, moveSelectedNotes } = useSelectionService();
     const selectedNoteIds = useAppSelector((state) => state.notes.selectedNoteIds);
     const [position, setPosition] = useState({ x: note.x ?? 0, y: note.y ?? 0 });
     const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
     const [editDialogOpened, setEditDialogOpened] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [draggingStart, setDraggingStart] = useState({ x: 0, y: 0 });
+    const [selectionOffset, setSelectionOffset] = useState({ x: 0, y: 0 });
 
     const isBulkOperation = selectedNoteIds.length > 1 && selectedNoteIds.includes(note.uuid);
     const bulkOperationNoteCount = isBulkOperation ? selectedNoteIds.length : 1;
 
+    const handleDragStart = (_event: DraggableEvent, data: DraggableData) => {
+        if (isBulkOperation) {
+            setDraggingStart({ x: data.x, y: data.y });
+            setSelectionOffset({ x: 0, y: 0 });
+            setIsDragging(true);
+            onDraggingSelectionChange(true);
+        }
+    };
+
+    const handleDrag = (_event: DraggableEvent, data: DraggableData) => {
+        if (isBulkOperation) {
+            setSelectionOffset({ x: data.x - draggingStart.x, y: data.y - draggingStart.y });
+        }
+    };
+
     const handleDragStop = (_event: DraggableEvent, data: DraggableData) => {
-        setPosition({ x: data.x, y: data.y });
-        moveNote(note, { x: data.x, y: data.y });
+        if (isBulkOperation) {
+            setPosition({ x: data.x, y: data.y });
+            moveSelectedNotes(selectionOffset);
+            setSelectionOffset({ x: 0, y: 0 });
+            setTimeout(() => {
+                setIsDragging(false);
+                onDraggingSelectionChange(false);
+            }, 1);
+        } else {
+            setPosition({ x: data.x, y: data.y });
+            moveNote(note, { x: data.x, y: data.y });
+        }
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -86,33 +121,41 @@ const CanvasNoteCard = ({
     }, [note.x, note.y]);
 
     return (
-        <Rnd
-            position={{ x: position.x, y: position.y }}
-            enableResizing={false}
-            onDragStop={handleDragStop}
-            scale={zoom}
-            dragHandleClassName="card-footer"
-        >
-            <ContextMenu.Root>
-                <ContextMenu.Trigger>
-                    <NoteCard
-                        note={note}
-                        tabIndex={0}
-                        onKeyDown={handleKeyDown}
-                        style={{ outline: isSelected ? '2px solid var(--accent-8)' : 'none' }}
-                        onMouseDown={handleMouseDown}
+        <>
+            <Rnd
+                position={{ x: position.x, y: position.y }}
+                enableResizing={false}
+                onDragStart={handleDragStart}
+                onDrag={handleDrag}
+                onDragStop={handleDragStop}
+                scale={zoom}
+                dragHandleClassName="card-footer"
+                style={{ visibility: isDraggingSelection && isSelected ? 'hidden' : 'visible' }}
+            >
+                <ContextMenu.Root>
+                    <ContextMenu.Trigger>
+                        <NoteCard
+                            note={note}
+                            tabIndex={0}
+                            onKeyDown={handleKeyDown}
+                            style={{ outline: isSelected ? '2px solid var(--accent-8)' : 'none' }}
+                            onMouseDown={handleMouseDown}
+                        />
+                    </ContextMenu.Trigger>
+                    <NoteCardContextMenuContent
+                        onSelectEdit={() => setEditDialogOpened(true)}
+                        onSelectDelete={() => setDeleteDialogOpened(true)}
+                        onSelectMoveToDrawer={handleMoveToDrawer}
+                        bulkSelection={isBulkOperation}
                     />
-                </ContextMenu.Trigger>
-                <NoteCardContextMenuContent
-                    onSelectEdit={() => setEditDialogOpened(true)}
-                    onSelectDelete={() => setDeleteDialogOpened(true)}
-                    onSelectMoveToDrawer={handleMoveToDrawer}
-                    bulkSelection={isBulkOperation}
-                />
-            </ContextMenu.Root>
-            <NoteDeleteDialog open={deleteDialogOpened} onOpenChange={setDeleteDialogOpened} onSubmit={handleDeleteNote} count={bulkOperationNoteCount} />
-            <NoteEditDialog note={note} open={editDialogOpened} onOpenChange={setEditDialogOpened} onSubmit={handleEditNote} />
-        </Rnd>
+                </ContextMenu.Root>
+                <NoteDeleteDialog open={deleteDialogOpened} onOpenChange={setDeleteDialogOpened} onSubmit={handleDeleteNote} count={bulkOperationNoteCount} />
+                <NoteEditDialog note={note} open={editDialogOpened} onOpenChange={setEditDialogOpened} onSubmit={handleEditNote} />
+            </Rnd>
+            {isBulkOperation && isDragging && (
+                <NoteSelectionPortal canvasFrameRef={canvasFrameRef} offset={selectionOffset} />
+            )}
+        </>
     );
 };
 

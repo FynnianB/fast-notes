@@ -14,6 +14,11 @@ export const fetchNotes = createAsyncThunk(
     async () => notesApi.fetchNotes(),
 );
 
+interface BulkMoveNotesPayload {
+    noteUuids: string[];
+    offset: { x: number, y: number };
+}
+
 const notesSlice = createSlice({
     name: 'notes',
     initialState,
@@ -37,17 +42,15 @@ const notesSlice = createSlice({
             const noteUuid = action.payload;
             state.noteItems = state.noteItems.filter((note) => note.uuid !== noteUuid);
         },
-        bulkUpdateNotes: (state, action: PayloadAction<Note[]>) => {
-            state.noteItems = state.noteItems.map((note) => {
-                const updatedNote = action.payload.find((n) => n.uuid === note.uuid);
-                if (updatedNote) {
-                    return {
-                        ...updatedNote,
-                        lastModified: updatedNote.lastModified.toISOString(),
-                        createdAt: updatedNote.createdAt.toISOString(),
-                    };
-                }
-                return note;
+        bulkMoveNotes: (state, action: PayloadAction<BulkMoveNotesPayload>) => {
+            action.payload.noteUuids.forEach((noteUuid) => {
+                const noteIndex = state.noteItems.findIndex((note) => note.uuid === noteUuid);
+                const item = state.noteItems[noteIndex];
+                state.noteItems[noteIndex] = {
+                    ...item,
+                    x: (item.x ?? 0) + action.payload.offset.x,
+                    y: (item.y ?? 0) + action.payload.offset.y,
+                };
             });
         },
         bulkMoveNotesToDrawer: (state, action: PayloadAction<string[]>) => {
@@ -85,7 +88,7 @@ export const {
     updateNote,
     deleteNote,
     setSelectedNoteIds,
-    bulkUpdateNotes,
+    bulkMoveNotes,
     bulkMoveNotesToDrawer,
     bulkDeleteNotes,
 } = notesSlice.actions;

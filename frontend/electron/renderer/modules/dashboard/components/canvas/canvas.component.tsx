@@ -37,8 +37,10 @@ const Canvas = () => {
     const startOffset = useRef({ x: 0, y: 0 });
     const startMouse = useRef({ x: 0, y: 0 });
     const canvasRef = useRef<HTMLDivElement>(null);
+    const canvasFrameRef = useRef<HTMLDivElement>(null);
     const [selectionBox, setSelectionBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
     const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
+    const [draggingSelection, setDraggingSelection] = useState(false);
 
     const zoomCanvas = (mouseX: number, mouseY: number, zoomDelta: number) => {
         const mouseCanvasX = (mouseX - offset.x) / zoom;
@@ -81,7 +83,7 @@ const Canvas = () => {
         if (event.button === 0 && !event.ctrlKey) {
             event.preventDefault();
             canvasRef.current?.focus();
-            if (!event.shiftKey) {
+            if (!event.shiftKey && selectedNoteIds.length > 0) {
                 dispatch(setSelectedNoteIds([]));
             }
             setSelectionBox({
@@ -150,7 +152,9 @@ const Canvas = () => {
                 })
                 .map((note) => note.uuid);
             const updatedIds = Array.from(new Set([...selectedNoteIds, ...selectedIds]));
-            dispatch(setSelectedNoteIds(updatedIds));
+            if (updatedIds.length > selectedNoteIds.length) {
+                dispatch(setSelectedNoteIds(updatedIds));
+            }
             setSelectionBox(null);
         }
     };
@@ -205,6 +209,7 @@ const Canvas = () => {
             <Box
                 id="canvas-frame"
                 className="canvas-frame"
+                ref={canvasFrameRef}
                 style={{
                     transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
                     transformOrigin: '0 0',
@@ -219,6 +224,9 @@ const Canvas = () => {
                         isSelected={selectedNoteIds.includes(note.uuid)}
                         onSelectionToggle={handleSelectionToggle}
                         onSelectSingle={handleSelectSingle}
+                        isDraggingSelection={draggingSelection}
+                        onDraggingSelectionChange={setDraggingSelection}
+                        canvasFrameRef={canvasFrameRef}
                     />
                 ))}
                 {selectionBox && (
