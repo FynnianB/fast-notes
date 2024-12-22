@@ -29,7 +29,21 @@ export const addNote = (content: string): boolean => {
 }
 
 export const updateNote = (model: NoteModel): void => {
-    model.lastModified = new Date();
     NotesRepository.updateNote(model);
+    // todo: Syncing logic
+}
+
+export const bulkUpdateNotes = (models: NoteModel[]): void => {
+    NotesRepository.bulkUpdateNotes(models);
+    // todo: Syncing logic
+}
+
+export const bulkDeleteNotes = (uuids: string[]): void => {
+    NotesRepository.bulkDeleteNotes(uuids);
+    // todo: Syncing logic
+}
+
+export const bulkMoveNotesToDrawer = (uuids: string[]): void => {
+    NotesRepository.bulkMoveNotesToDrawer(uuids);
     // todo: Syncing logic
 }

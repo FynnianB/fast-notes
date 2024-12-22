@@ -32,6 +32,6 @@ CREATE TABLE IF NOT EXISTS sync_queue (
     table_name VARCHAR(64) NOT NULL,
     row_id VARCHAR(64) NOT NULL,
     action VARCHAR(64) NOT NULL,
-    data TEXT NOT NULL,
+    data TEXT DEFAULT NULL,
     last_modified DATETIME NOT NULL
 );

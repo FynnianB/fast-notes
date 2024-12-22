@@ -2,6 +2,7 @@ import {
  Box, Card, Flex, Inset, Text,
 } from '@radix-ui/themes';
 import type { ComponentPropsWithoutRef, Ref } from 'react';
+import type React from 'react';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { RxDoubleArrowDown, RxDoubleArrowUp } from 'react-icons/rx';
@@ -30,6 +31,12 @@ const NoteCard = ({
         }
     }, [note.content]);
 
+    const handleToggleClick = (e: React.MouseEvent<HTMLDivElement> | React.MouseEvent<SVGElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setIsExpanded(!isExpanded);
+    };
+
     return (
         <Card
             ref={ref}
@@ -49,15 +56,15 @@ const NoteCard = ({
                     {(isCollapsable === undefined || isCollapsable) && !isExpanded && (
                         <div
                             className={style.expansionTriggerZone}
-                            onClick={() => setIsExpanded(!isExpanded)}
+                            onClick={handleToggleClick}
                             role="button"
                             tabIndex={0}
                         />
                     )}
                     {isCollapsable && (
                         isExpanded
-                            ? <RxDoubleArrowUp size={20} className={style.expansionTrigger} onClick={() => setIsExpanded(false)} />
-                            : <RxDoubleArrowDown size={20} className={style.expansionTrigger} onClick={() => setIsExpanded(true)} />
+                            ? <RxDoubleArrowUp size={20} className={style.expansionTrigger} onClick={handleToggleClick} />
+                            : <RxDoubleArrowDown size={20} className={style.expansionTrigger} onClick={handleToggleClick} />
                     )}
                 </Box>
                 <Flex justify="between" className={classNames(style.footer, 'card-footer')}>

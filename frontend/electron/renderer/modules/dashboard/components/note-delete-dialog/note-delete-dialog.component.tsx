@@ -1,21 +1,29 @@
-import { Button, AlertDialog, Flex } from '@radix-ui/themes';
+import { Button, AlertDialog, Flex, Text } from '@radix-ui/themes';
 
 interface NoteDeleteDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: () => void;
+    count?: number;
 }
 
 const NoteDeleteDialog = ({
     open,
     onOpenChange,
     onSubmit,
+    count = 1,
 }: NoteDeleteDialogProps) => (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
         <AlertDialog.Content maxWidth="450px">
-            <AlertDialog.Title>Delete note</AlertDialog.Title>
+            <AlertDialog.Title>Delete {count > 1 ? `all ${count} notes` : 'note'}</AlertDialog.Title>
             <AlertDialog.Description size="2">
-                Are you sure? This action cannot be undone. This will permanently delete the note.
+                Are you sure? This action cannot be undone.
+                {' '}
+                {count > 1 ? (
+                    <>This will permanently delete all <Text color="red">{count}</Text> selected notes</>
+                ) : (
+                    <>This will permanently delete the note</>
+                )}
             </AlertDialog.Description>
 
             <Flex gap="3" mt="4" justify="end">

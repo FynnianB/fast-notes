@@ -4,12 +4,14 @@ interface NoteCardContextMenuContentProps {
     onSelectEdit: () => void;
     onSelectDelete: () => void;
     onSelectMoveToDrawer: () => void;
+    bulkSelection?: boolean;
 }
 
 const NoteCardContextMenuContent = ({
     onSelectEdit,
     onSelectDelete,
     onSelectMoveToDrawer,
+    bulkSelection = false,
 }: NoteCardContextMenuContentProps) => {
     const categories = [
         { id: 1, name: 'Not implemented' },
@@ -19,23 +21,32 @@ const NoteCardContextMenuContent = ({
 
     return (
         <ContextMenu.Content variant="soft">
-            <ContextMenu.Item shortcut="⌘ E" onSelect={onSelectEdit}>Edit</ContextMenu.Item>
-
-            <ContextMenu.Separator />
+            {!bulkSelection && (
+                <>
+                    <ContextMenu.Item shortcut="⌘ E" onSelect={onSelectEdit}>Edit</ContextMenu.Item>
+                    <ContextMenu.Separator />
+                </>
+            )}
 
             <ContextMenu.Sub>
-                <ContextMenu.SubTrigger disabled>Move to category</ContextMenu.SubTrigger>
+                <ContextMenu.SubTrigger disabled>
+                    {bulkSelection ? 'Move selected to category' : 'Move to category'}
+                </ContextMenu.SubTrigger>
                 <ContextMenu.SubContent>
                     {categories.map((category) => (
                         <ContextMenu.Item key={category.id}>{category.name}</ContextMenu.Item>
                     ))}
                 </ContextMenu.SubContent>
             </ContextMenu.Sub>
-            <ContextMenu.Item onSelect={onSelectMoveToDrawer}>Move back to drawer</ContextMenu.Item>
+            <ContextMenu.Item onSelect={onSelectMoveToDrawer}>
+                {bulkSelection ? 'Move selected back to drawer' : 'Move back to drawer'}
+            </ContextMenu.Item>
 
             <ContextMenu.Separator />
 
-            <ContextMenu.Item shortcut="⌫" color="red" onSelect={onSelectDelete}>Delete</ContextMenu.Item>
+            <ContextMenu.Item shortcut="⌫" color="red" onSelect={onSelectDelete}>
+                {bulkSelection ? 'Delete selected' : 'Delete'}
+            </ContextMenu.Item>
         </ContextMenu.Content>
     );
 };

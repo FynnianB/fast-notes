@@ -14,6 +14,7 @@ export const useCanvasService = () => {
     const [, userPreferencesRef] = useAppSelectorRef(selectDashboardUserPreferences);
 
     const updateNoteContent = useCallback((note: Note, content: string) => {
+        if (note.content === content) return;
         const updatedNote = {
             ...note,
             content: content,

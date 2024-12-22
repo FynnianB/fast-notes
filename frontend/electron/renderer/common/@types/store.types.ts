@@ -19,4 +19,5 @@ export type StoreSpecificNote = Omit<Note, 'lastModified' | 'createdAt'> & {
 
 export type NotesStore = {
     noteItems: StoreSpecificNote[];
+    selectedNoteIds: string[];
 };

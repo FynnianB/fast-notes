@@ -20,7 +20,7 @@ export const selectPlacedNoteItems = createAppSelector(
     (noteItems) => noteItems.filter((note) => note.x !== null && !Number.isNaN(note.x) && note.y !== null && !Number.isNaN(note.y)),
 );
 
-const BUFFER = 500;
+const BUFFER = 1000;
 export const selectVisibleNoteItems = createAppSelector(
     [selectPlacedNoteItems, (state) => state.userPreferences.dashboard.canvasZoom, (state) => state.userPreferences.dashboard.canvasOffset],
     (noteItems, canvasZoom, canvasOffset) => {
