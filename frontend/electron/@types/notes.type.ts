@@ -1,8 +1,10 @@
 import { NoteSyncStatus } from '../main/enumerations/NoteSyncStatus.enumation';
+import { CanvasObjectType } from '../main/enumerations/CanvasObjectType';
+import { UiColor } from '../main/enumerations/UiColor.enumeration';
 
-export type Note = {
+export interface CanvasObject {
     uuid: string;
-    content: string;
+    type: CanvasObjectType;
     lastModified: Date;
     createdAt: Date;
     category: Category|null;
@@ -17,3 +19,15 @@ export type Category = {
     name: string;
     lastModified: Date;
 }
+
+export interface Note extends CanvasObject {
+    content: string;
+}
+
+export interface Heading extends CanvasObject {
+    text: string;
+    fontSize: number;
+    color: UiColor;
+}
+
+export type CanvasObjectTyped = Note | Heading;

@@ -14,7 +14,8 @@ import { setSelectedNoteIds } from '@common/store/notes.slice';
 import { useSelectionService } from '@modules/dashboard/services/selection.service';
 import NoteDeleteDialog from '@modules/dashboard/components/note-delete-dialog/note-delete-dialog.component';
 import store from '../../../../store';
-import type { Note } from '../../../../../@types/notes.type';
+import type { CanvasObject, Heading, Note } from '../../../../../@types/notes.type';
+import { CanvasObjectType } from '../../../../../main/enumerations/CanvasObjectType';
 
 const debouncedHandlePanning = debounce((newOffset) => {
     store.dispatch(setDashboardCanvasOffset(newOffset));
@@ -27,8 +28,8 @@ const debouncedHandleZooming = debounce((newOffset, newZoom) => {
 
 const Canvas = () => {
     const dispatch = useAppDispatch();
-    const { deleteSelectedNotes } = useSelectionService();
-    const notes = useAppSelector(selectVisibleNoteItems);
+    const { deleteSelectedCanvasObjects } = useSelectionService();
+    const canvasObjects = useAppSelector(selectVisibleNoteItems);
     const selectedNoteIds = useAppSelector((state) => state.notes.selectedNoteIds);
     const { canvasZoom, canvasOffset } = useAppSelector(selectDashboardUserPreferences);
     const [zoom, setZoom] = useState(canvasZoom);
@@ -124,7 +125,7 @@ const Canvas = () => {
             return;
         }
         if (selectionBox) {
-            const selectedIds = notes
+            const selectedIds = canvasObjects
                 .filter((note) => {
                     if (note.x === null || note.y === null) return false;
 
@@ -174,7 +175,7 @@ const Canvas = () => {
         }
     };
 
-    const handleSelectionToggle = (note: Note, selected: boolean) => {
+    const handleSelectionToggle = (note: CanvasObject, selected: boolean) => {
         if (selected) {
             dispatch(setSelectedNoteIds([...selectedNoteIds, note.uuid]));
         } else {
@@ -182,7 +183,7 @@ const Canvas = () => {
         }
     };
 
-    const handleSelectSingle = (note: Note) => {
+    const handleSelectSingle = (note: CanvasObject) => {
         dispatch(setSelectedNoteIds([note.uuid]));
     };
 
@@ -216,9 +217,9 @@ const Canvas = () => {
                     position: 'relative',
                 }}
             >
-                {notes.map((note) => (
+                {canvasObjects.map((note) => (note.type === CanvasObjectType.Note ? (
                     <CanvasNoteCard
-                        note={note}
+                        note={note as Note}
                         key={note.uuid}
                         zoom={zoom}
                         isSelected={selectedNoteIds.includes(note.uuid)}
@@ -228,7 +229,9 @@ const Canvas = () => {
                         onDraggingSelectionChange={setDraggingSelection}
                         canvasFrameRef={canvasFrameRef}
                     />
-                ))}
+                ) : (
+                    <h1>{(note as Heading).text}</h1>
+                )))}
                 {selectionBox && (
                     <div
                         style={{
@@ -244,7 +247,7 @@ const Canvas = () => {
                     />
                 )}
             </Box>
-            <NoteDeleteDialog open={deleteDialogOpened} onOpenChange={setDeleteDialogOpened} onSubmit={deleteSelectedNotes} count={selectedNoteIds.length} />
+            <NoteDeleteDialog open={deleteDialogOpened} onOpenChange={setDeleteDialogOpened} onSubmit={deleteSelectedCanvasObjects} count={selectedNoteIds.length} />
         </div>
     );
 };

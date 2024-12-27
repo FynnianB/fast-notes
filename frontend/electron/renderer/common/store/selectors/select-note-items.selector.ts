@@ -1,18 +1,42 @@
+import type { StoreSpecificHeading, StoreSpecificNote } from '@common/@types/store.types';
 import { createAppSelector } from '../../../store';
-import type { Note } from '../../../../@types/notes.type';
+import type { CanvasObjectTyped, Heading, Note } from '../../../../@types/notes.type';
+import { CanvasObjectType } from '../../../../main/enumerations/CanvasObjectType';
 
 export const selectNoteItems = createAppSelector(
     [(state) => state.notes.noteItems],
-    (noteItems) => noteItems.map((note): Note => ({
-        ...note,
-        lastModified: new Date(note.lastModified),
-        createdAt: new Date(note.createdAt),
-    })),
+    (noteItems) => noteItems.map((item): CanvasObjectTyped => {
+        const commonFields = {
+            ...item,
+            lastModified: new Date(item.lastModified),
+            createdAt: new Date(item.createdAt),
+        };
+
+        if (item.type === CanvasObjectType.Note) {
+            const note = item as StoreSpecificNote;
+            return {
+                ...commonFields,
+                content: note.content,
+            } as Note;
+        }
+        if (item.type === CanvasObjectType.Heading) {
+            const heading = item as StoreSpecificHeading;
+            return {
+                ...commonFields,
+                text: heading.text,
+                fontSize: heading.fontSize,
+                color: heading.color,
+            } as Heading;
+        }
+
+        throw new Error(`Unknown type: ${item.type}`);
+    }),
 );
 
 export const selectUnplacedNoteItems = createAppSelector(
     [selectNoteItems],
-    (noteItems) => noteItems.filter((note) => note.x === null || Number.isNaN(note.x) || note.y === null || Number.isNaN(note.y)),
+    (noteItems) => noteItems.filter((note) => note.type === CanvasObjectType.Note
+        && (note.x === null || Number.isNaN(note.x) || note.y === null || Number.isNaN(note.y))) as Note[],
 );
 
 export const selectPlacedNoteItems = createAppSelector(

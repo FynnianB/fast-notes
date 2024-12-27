@@ -37,8 +37,8 @@ const CanvasNoteCard = ({
     onDraggingSelectionChange,
     canvasFrameRef,
 }: CanvasNoteCardProps) => {
-    const { moveNote, deleteNote, moveNoteToDrawer, updateNoteContent } = useCanvasService();
-    const { deleteSelectedNotes, moveSelectedNotesToDrawer, moveSelectedNotes } = useSelectionService();
+    const { moveCanvasObject, deleteCanvasObject, moveNoteToDrawer, updateNoteContent } = useCanvasService();
+    const { deleteSelectedCanvasObjects, moveSelectedNotesToDrawer, moveSelectedCanvasObjects } = useSelectionService();
     const selectedNoteIds = useAppSelector((state) => state.notes.selectedNoteIds);
     const [position, setPosition] = useState({ x: note.x ?? 0, y: note.y ?? 0 });
     const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
@@ -68,7 +68,7 @@ const CanvasNoteCard = ({
     const handleDragStop = (_event: DraggableEvent, data: DraggableData) => {
         if (isBulkOperation) {
             setPosition({ x: data.x, y: data.y });
-            moveSelectedNotes(selectionOffset);
+            moveSelectedCanvasObjects(selectionOffset);
             setSelectionOffset({ x: 0, y: 0 });
             setTimeout(() => {
                 setIsDragging(false);
@@ -76,7 +76,7 @@ const CanvasNoteCard = ({
             }, 1);
         } else {
             setPosition({ x: data.x, y: data.y });
-            moveNote(note, { x: data.x, y: data.y });
+            moveCanvasObject(note, { x: data.x, y: data.y });
         }
     };
 
@@ -102,9 +102,9 @@ const CanvasNoteCard = ({
 
     const handleDeleteNote = () => {
         if (isBulkOperation) {
-            deleteSelectedNotes();
+            deleteSelectedCanvasObjects();
         } else {
-            deleteNote(note);
+            deleteCanvasObject(note);
         }
     };
     const handleMoveToDrawer = () => {

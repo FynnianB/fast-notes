@@ -1,39 +1,43 @@
 import { useAppDispatch, useAppSelector } from '@common/hooks/store.hooks';
 import { useCallback } from 'react';
-import { bulkDeleteNotes, setSelectedNoteIds, bulkMoveNotesToDrawer, bulkMoveNotes } from '@common/store/notes.slice';
+import { bulkDeleteCanvasObjects, setSelectedNoteIds, bulkMoveNotesToDrawer, bulkMoveCanvasObjects } from '@common/store/notes.slice';
 import * as notesApi from '@common/api/notes.api';
 import { selectSelectedNoteItems } from '@common/store/selectors/select-note-items.selector';
+import { CanvasObjectType } from '../../../../main/enumerations/CanvasObjectType';
 
 export const useSelectionService = () => {
     const dispatch = useAppDispatch();
     const selectedNoteIds = useAppSelector((state) => state.notes.selectedNoteIds);
     const selectedNotes = useAppSelector(selectSelectedNoteItems);
 
-    const moveSelectedNotes = useCallback((offset: { x: number, y: number }) => {
-        dispatch(bulkMoveNotes({ noteUuids: selectedNoteIds, offset }));
+    const moveSelectedCanvasObjects = useCallback((offset: { x: number, y: number }) => {
+        dispatch(bulkMoveCanvasObjects({ noteUuids: selectedNoteIds, offset }));
         const updatesNotes = selectedNotes.map((note) => ({
                 ...note,
                 x: (note.x ?? 0) + offset.x,
                 y: (note.y ?? 0) + offset.y,
         }));
-        notesApi.bulkUpdateNotes(updatesNotes).then();
+        notesApi.bulkUpdateCanvasObjects(updatesNotes).then();
     }, [dispatch, selectedNoteIds, selectedNotes]);
 
     const moveSelectedNotesToDrawer = useCallback(() => {
-        dispatch(bulkMoveNotesToDrawer(selectedNoteIds));
+        const onlyNoteIds = selectedNotes
+            .filter((note) => note.type === CanvasObjectType.Note)
+            .map((note) => note.uuid);
+        dispatch(bulkMoveNotesToDrawer(onlyNoteIds));
         dispatch(setSelectedNoteIds([]));
-        notesApi.bulkMoveNotesToDrawer(selectedNoteIds).then();
-    }, [dispatch, selectedNoteIds]);
+        notesApi.bulkMoveNotesToDrawer(onlyNoteIds).then();
+    }, [dispatch, selectedNotes]);
 
-    const deleteSelectedNotes = useCallback(() => {
-        dispatch(bulkDeleteNotes(selectedNoteIds));
+    const deleteSelectedCanvasObjects = useCallback(() => {
+        dispatch(bulkDeleteCanvasObjects(selectedNoteIds));
         dispatch(setSelectedNoteIds([]));
-        notesApi.bulkDeleteNotes(selectedNoteIds).then();
+        notesApi.bulkDeleteCanvasObjects(selectedNoteIds).then();
     }, [dispatch, selectedNoteIds]);
 
     return {
-        moveSelectedNotes,
+        moveSelectedCanvasObjects,
         moveSelectedNotesToDrawer,
-        deleteSelectedNotes,
+        deleteSelectedCanvasObjects,
     };
 };

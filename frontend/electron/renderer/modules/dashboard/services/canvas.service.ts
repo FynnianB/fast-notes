@@ -1,13 +1,14 @@
 import { useAppDispatch } from '@common/hooks/store.hooks';
 import {
     updateNote as updateNoteThunk,
-    deleteNote as deleteNoteThunk,
+    updateCanvasObject as updateCanvasObjectThunk,
+    deleteCanvasObject as deleteCanvasObjectThunk,
 } from '@common/store/notes.slice';
 import * as notesApi from '@common/api/notes.api';
 import { selectDashboardUserPreferences } from '@common/store/user-preferences.slice';
 import { useCallback } from 'react';
 import { useAppSelectorRef } from '@common/hooks/react.hooks';
-import type { Note } from '../../../../@types/notes.type';
+import type { CanvasObject, Note } from '../../../../@types/notes.type';
 
 export const useCanvasService = () => {
     const dispatch = useAppDispatch();
@@ -37,22 +38,19 @@ export const useCanvasService = () => {
         notesApi.updateNote(updatedNote).then();
     }, [dispatch, userPreferencesRef]);
 
-    const moveNote = useCallback((note: Note, position: { x: number, y: number }) => {
-        const updatedNote = {
-            ...note,
+    const moveCanvasObject = useCallback((canvasObject: CanvasObject, position: { x: number, y: number }) => {
+        const updatedCanvasObject = {
+            ...canvasObject,
             x: position.x,
             y: position.y,
         };
-        dispatch(updateNoteThunk(updatedNote));
-        notesApi.updateNote(updatedNote).then();
+        dispatch(updateCanvasObjectThunk(updatedCanvasObject));
+        notesApi.updateCanvasObject(updatedCanvasObject).then();
     }, [dispatch]);
 
-    const deleteNote = useCallback((note: Note) => {
-        dispatch(deleteNoteThunk(note.uuid));
-        notesApi.updateNote({
-            ...note,
-            isDeleted: true,
-        }).then();
+    const deleteCanvasObject = useCallback((note: Note) => {
+        dispatch(deleteCanvasObjectThunk(note.uuid));
+        notesApi.deleteCanvasObject(note.uuid).then();
     }, [dispatch]);
 
     const moveNoteToDrawer = useCallback((note: Note) => {
@@ -67,8 +65,8 @@ export const useCanvasService = () => {
 
     return {
         moveNoteFromDrawerToCanvas,
-        moveNote,
-        deleteNote,
+        moveCanvasObject,
+        deleteCanvasObject,
         moveNoteToDrawer,
         updateNoteContent,
     };

@@ -10,7 +10,7 @@ const customFormat = format.combine(
 );
 
 const fileTransportAll = new transports.DailyRotateFile({
-    level: process.env.NODE_ENV === 'development' ? 'info' : 'warning',
+    level: process.env.NODE_ENV === 'development' ? 'debug' : 'warning',
     filename: 'renderer-%DATE%.log',
     dirname: logsFolder,
     datePattern: 'YYYY-MM-DD',
