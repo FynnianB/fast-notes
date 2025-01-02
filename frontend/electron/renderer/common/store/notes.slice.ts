@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { NotesStore } from '@common/@types/store.types';
 import * as notesApi from '@common/api/notes.api';
-import type { Note } from '../../../@types/notes.type';
+import type { CanvasObject, CanvasObjectTyped, Heading, Note } from '../../../@types/notes.type';
 
 const initialState: NotesStore = {
     noteItems: [],
@@ -23,7 +23,7 @@ const notesSlice = createSlice({
     name: 'notes',
     initialState,
     reducers: {
-        setNoteItems: (state, action: PayloadAction<Note[]>) => {
+        setNoteItems: (state, action: PayloadAction<CanvasObjectTyped[]>) => {
             state.noteItems = action.payload.map((note) => ({
                 ...note,
                 lastModified: note.lastModified.toISOString(),
@@ -38,13 +38,37 @@ const notesSlice = createSlice({
                 createdAt: action.payload.createdAt.toISOString(),
             };
         },
-        deleteNote: (state, action: PayloadAction<string>) => {
-            const noteUuid = action.payload;
-            state.noteItems = state.noteItems.filter((note) => note.uuid !== noteUuid);
+        addTemporaryHeading: (state, action: PayloadAction<Heading>) => {
+            state.noteItems.push({
+                ...action.payload,
+                lastModified: action.payload.lastModified.toISOString(),
+                createdAt: action.payload.createdAt.toISOString(),
+            });
         },
-        bulkMoveNotes: (state, action: PayloadAction<BulkMoveNotesPayload>) => {
-            action.payload.noteUuids.forEach((noteUuid) => {
-                const noteIndex = state.noteItems.findIndex((note) => note.uuid === noteUuid);
+        updateHeading: (state, action: PayloadAction<Heading>) => {
+            const headingIndex = state.noteItems.findIndex((heading) => heading.uuid === action.payload.uuid);
+            state.noteItems[headingIndex] = {
+                ...action.payload,
+                lastModified: action.payload.lastModified.toISOString(),
+                createdAt: action.payload.createdAt.toISOString(),
+            };
+        },
+        updateCanvasObject: (state, action: PayloadAction<CanvasObject>) => {
+            const noteIndex = state.noteItems.findIndex((obj) => obj.uuid === action.payload.uuid);
+            state.noteItems[noteIndex] = {
+                ...state.noteItems[noteIndex],
+                ...action.payload,
+                lastModified: action.payload.lastModified.toISOString(),
+                createdAt: action.payload.createdAt.toISOString(),
+            };
+        },
+        deleteCanvasObject: (state, action: PayloadAction<string>) => {
+            const uuid = action.payload;
+            state.noteItems = state.noteItems.filter((obj) => obj.uuid !== uuid);
+        },
+        bulkMoveCanvasObjects: (state, action: PayloadAction<BulkMoveNotesPayload>) => {
+            action.payload.noteUuids.forEach((objUuid) => {
+                const noteIndex = state.noteItems.findIndex((obj) => obj.uuid === objUuid);
                 const item = state.noteItems[noteIndex];
                 state.noteItems[noteIndex] = {
                     ...item,
@@ -65,7 +89,7 @@ const notesSlice = createSlice({
                 return note;
             });
         },
-        bulkDeleteNotes: (state, action: PayloadAction<string[]>) => {
+        bulkDeleteCanvasObjects: (state, action: PayloadAction<string[]>) => {
             state.noteItems = state.noteItems.filter((note) => !action.payload.includes(note.uuid));
         },
         setSelectedNoteIds: (state, action: PayloadAction<string[]>) => {
@@ -86,11 +110,14 @@ const notesSlice = createSlice({
 export const {
     setNoteItems,
     updateNote,
-    deleteNote,
+    addTemporaryHeading,
+    updateHeading,
+    updateCanvasObject,
+    deleteCanvasObject,
     setSelectedNoteIds,
-    bulkMoveNotes,
+    bulkMoveCanvasObjects,
     bulkMoveNotesToDrawer,
-    bulkDeleteNotes,
+    bulkDeleteCanvasObjects,
 } = notesSlice.actions;
 
 export default notesSlice.reducer;

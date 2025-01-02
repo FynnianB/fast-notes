@@ -7,6 +7,7 @@ import * as overlayHelper from './window/overlayHelper';
 import * as windowManager from './window/windowManager';
 import { handleIpc } from './ipc';
 import logger from './services/logger.service';
+import { sqlite } from './database/sqlite';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -86,3 +87,10 @@ app.whenReady()
 app.on('window-all-closed', () => {
     if (process.platform === 'darwin') app.dock.hide();
 })
+
+app.on('quit', () => {
+    tray.destroy();
+    globalShortcut.unregisterAll();
+    sqlite.closeConnection();
+    logger.info('Main process exited successfully');
+});

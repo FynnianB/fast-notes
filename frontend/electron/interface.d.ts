@@ -1,5 +1,5 @@
 import { UserPreferences } from "./@types/userPreferences.type";
-import { Note } from "./@types/notes.type";
+import { CanvasObject, CanvasObjectTyped, Heading, Note } from "./@types/notes.type";
 import { RendererLog } from "./@types/logging.type";
 
 export interface IOverlayAPI {
@@ -11,13 +11,17 @@ export interface IOverlayAPI {
 export interface IElectronAPI {
     updateUserPreferences: (settings: UserPreferences) => Promise<void>,
     getUserPreferences: () => Promise<UserPreferences>,
-    fetchNotes: () => Promise<Note[]>,
+    fetchNotes: () => Promise<CanvasObjectTyped[]>,
     updateNote: (note: Note) => Promise<void>,
-    bulkUpdateNotes: (notes: Note[]) => Promise<void>,
+    addHeading: (headingData: Pick<Heading, 'text'|'fontSize'|'color'|'x'|'y'>) => Promise<void>,
+    updateHeading: (heading: Heading) => Promise<void>,
+    updateCanvasObject: (canvasObject: CanvasObject) => Promise<void>,
+    deleteCanvasObject: (uuid: string) => Promise<void>,
+    bulkUpdateCanvasObjects: (canvasObjects: CanvasObject[]) => Promise<void>,
     bulkMoveNotesToDrawer: (noteIds: string[]) => Promise<void>,
-    bulkDeleteNotes: (noteIds: string[]) => Promise<void>,
-    onUpdateNotes: (callback: (notes: Note[]) => void) => void,
+    bulkDeleteCanvasObjects: (canvasObjectIds: string[]) => Promise<void>,
     openOverlay: () => Promise<void>,
+    onUpdateCanvasObjects: (callback: (canvasObjects: CanvasObjectTyped[]) => void) => void,
 }
 
 export interface ISharedAPI {

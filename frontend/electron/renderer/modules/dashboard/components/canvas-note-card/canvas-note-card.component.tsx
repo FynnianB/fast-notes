@@ -16,6 +16,8 @@ import { useSelectionService } from '@modules/dashboard/services/selection.servi
 import NoteSelectionPortal from '@modules/dashboard/components/note-selection-portal/note-selection-portal.component';
 import type { Note } from '../../../../../@types/notes.type';
 
+const isOffsetSignificantEnough = (offset: { x: number; y: number }) => Math.abs(offset.x) > 0.1 || Math.abs(offset.y) > 0.1;
+
 interface CanvasNoteCardProps {
     note: Note;
     zoom: number;
@@ -37,8 +39,8 @@ const CanvasNoteCard = ({
     onDraggingSelectionChange,
     canvasFrameRef,
 }: CanvasNoteCardProps) => {
-    const { moveNote, deleteNote, moveNoteToDrawer, updateNoteContent } = useCanvasService();
-    const { deleteSelectedNotes, moveSelectedNotesToDrawer, moveSelectedNotes } = useSelectionService();
+    const { moveCanvasObject, deleteCanvasObject, moveNoteToDrawer, updateNoteContent } = useCanvasService();
+    const { deleteSelectedCanvasObjects, moveSelectedNotesToDrawer, moveSelectedCanvasObjects } = useSelectionService();
     const selectedNoteIds = useAppSelector((state) => state.notes.selectedNoteIds);
     const [position, setPosition] = useState({ x: note.x ?? 0, y: note.y ?? 0 });
     const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
@@ -68,7 +70,9 @@ const CanvasNoteCard = ({
     const handleDragStop = (_event: DraggableEvent, data: DraggableData) => {
         if (isBulkOperation) {
             setPosition({ x: data.x, y: data.y });
-            moveSelectedNotes(selectionOffset);
+            if (isOffsetSignificantEnough(selectionOffset)) {
+                moveSelectedCanvasObjects(selectionOffset);
+            }
             setSelectionOffset({ x: 0, y: 0 });
             setTimeout(() => {
                 setIsDragging(false);
@@ -76,7 +80,9 @@ const CanvasNoteCard = ({
             }, 1);
         } else {
             setPosition({ x: data.x, y: data.y });
-            moveNote(note, { x: data.x, y: data.y });
+            if (note.x && note.y && isOffsetSignificantEnough({ x: data.x - note.x, y: data.y - note.y })) {
+                moveCanvasObject(note, { x: data.x, y: data.y });
+            }
         }
     };
 
@@ -102,9 +108,9 @@ const CanvasNoteCard = ({
 
     const handleDeleteNote = () => {
         if (isBulkOperation) {
-            deleteSelectedNotes();
+            deleteSelectedCanvasObjects();
         } else {
-            deleteNote(note);
+            deleteCanvasObject(note);
         }
     };
     const handleMoveToDrawer = () => {

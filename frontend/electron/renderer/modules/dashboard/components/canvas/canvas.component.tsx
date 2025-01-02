@@ -1,5 +1,5 @@
 import { Box } from '@radix-ui/themes';
-import { selectVisibleNoteItems } from '@common/store/selectors/select-note-items.selector';
+import { selectPlacedNoteItems } from '@common/store/selectors/select-note-items.selector';
 import { useAppDispatch, useAppSelector } from '@common/hooks/store.hooks';
 import CanvasNoteCard from '@modules/dashboard/components/canvas-note-card/canvas-note-card.component';
 import type React from 'react';
@@ -13,8 +13,11 @@ import debounce from 'lodash.debounce';
 import { setSelectedNoteIds } from '@common/store/notes.slice';
 import { useSelectionService } from '@modules/dashboard/services/selection.service';
 import NoteDeleteDialog from '@modules/dashboard/components/note-delete-dialog/note-delete-dialog.component';
+import HeadingInput from '@modules/dashboard/components/heading-input/heading-input.component';
+import CanvasHeading from '@modules/dashboard/components/canvas-heading/canvas-heading.component';
 import store from '../../../../store';
-import type { Note } from '../../../../../@types/notes.type';
+import type { CanvasObject, Heading, Note } from '../../../../../@types/notes.type';
+import { CanvasObjectType } from '../../../../../main/enumerations/CanvasObjectType';
 
 const debouncedHandlePanning = debounce((newOffset) => {
     store.dispatch(setDashboardCanvasOffset(newOffset));
@@ -27,8 +30,8 @@ const debouncedHandleZooming = debounce((newOffset, newZoom) => {
 
 const Canvas = () => {
     const dispatch = useAppDispatch();
-    const { deleteSelectedNotes } = useSelectionService();
-    const notes = useAppSelector(selectVisibleNoteItems);
+    const { deleteSelectedCanvasObjects } = useSelectionService();
+    const canvasObjects = useAppSelector(selectPlacedNoteItems);
     const selectedNoteIds = useAppSelector((state) => state.notes.selectedNoteIds);
     const { canvasZoom, canvasOffset } = useAppSelector(selectDashboardUserPreferences);
     const [zoom, setZoom] = useState(canvasZoom);
@@ -41,6 +44,7 @@ const Canvas = () => {
     const [selectionBox, setSelectionBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
     const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
     const [draggingSelection, setDraggingSelection] = useState(false);
+    const [headingInput, setHeadingInput] = useState<{ x: number; y: number } | null>(null);
 
     const zoomCanvas = (mouseX: number, mouseY: number, zoomDelta: number) => {
         const mouseCanvasX = (mouseX - offset.x) / zoom;
@@ -124,7 +128,7 @@ const Canvas = () => {
             return;
         }
         if (selectionBox) {
-            const selectedIds = notes
+            const selectedIds = canvasObjects
                 .filter((note) => {
                     if (note.x === null || note.y === null) return false;
 
@@ -159,6 +163,15 @@ const Canvas = () => {
         }
     };
 
+    const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target !== e.currentTarget) return;
+
+        const x = ((e.clientX - (canvasRef.current?.getBoundingClientRect().x ?? 0)) - offset.x) / zoom;
+        const y = ((e.clientY - (canvasRef.current?.getBoundingClientRect().y ?? 0)) - offset.y) / zoom;
+
+        setHeadingInput({ x, y });
+    };
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (document.activeElement !== canvasRef.current) return;
 
@@ -174,7 +187,7 @@ const Canvas = () => {
         }
     };
 
-    const handleSelectionToggle = (note: Note, selected: boolean) => {
+    const handleSelectionToggle = (note: CanvasObject, selected: boolean) => {
         if (selected) {
             dispatch(setSelectedNoteIds([...selectedNoteIds, note.uuid]));
         } else {
@@ -182,7 +195,7 @@ const Canvas = () => {
         }
     };
 
-    const handleSelectSingle = (note: Note) => {
+    const handleSelectSingle = (note: CanvasObject) => {
         dispatch(setSelectedNoteIds([note.uuid]));
     };
 
@@ -203,6 +216,7 @@ const Canvas = () => {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onKeyDown={handleKeyDown}
+            onDoubleClick={handleDoubleClick}
             role="button"
             tabIndex={0}
         >
@@ -216,9 +230,9 @@ const Canvas = () => {
                     position: 'relative',
                 }}
             >
-                {notes.map((note) => (
+                {canvasObjects.map((note) => (note.type === CanvasObjectType.Note ? (
                     <CanvasNoteCard
-                        note={note}
+                        note={note as Note}
                         key={note.uuid}
                         zoom={zoom}
                         isSelected={selectedNoteIds.includes(note.uuid)}
@@ -228,7 +242,19 @@ const Canvas = () => {
                         onDraggingSelectionChange={setDraggingSelection}
                         canvasFrameRef={canvasFrameRef}
                     />
-                ))}
+                ) : (
+                    <CanvasHeading
+                        heading={note as Heading}
+                        key={note.uuid}
+                        zoom={zoom}
+                        isSelected={selectedNoteIds.includes(note.uuid)}
+                        onSelectionToggle={handleSelectionToggle}
+                        onSelectSingle={handleSelectSingle}
+                        isDraggingSelection={draggingSelection}
+                        onDraggingSelectionChange={setDraggingSelection}
+                        canvasFrameRef={canvasFrameRef}
+                    />
+                )))}
                 {selectionBox && (
                     <div
                         style={{
@@ -243,8 +269,15 @@ const Canvas = () => {
                         }}
                     />
                 )}
+                {headingInput && (
+                    <HeadingInput
+                        position={headingInput}
+                        onSubmit={() => setHeadingInput(null)}
+                        onCancel={() => setHeadingInput(null)}
+                    />
+                )}
             </Box>
-            <NoteDeleteDialog open={deleteDialogOpened} onOpenChange={setDeleteDialogOpened} onSubmit={deleteSelectedNotes} count={selectedNoteIds.length} />
+            <NoteDeleteDialog open={deleteDialogOpened} onOpenChange={setDeleteDialogOpened} onSubmit={deleteSelectedCanvasObjects} count={selectedNoteIds.length} />
         </div>
     );
 };
