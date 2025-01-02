@@ -87,7 +87,8 @@ export class CanvasObjectRepository extends BaseRepository<CanvasObject> {
     findAll(): CanvasObject[] {
         const entities = this.db
             .prepare(`SELECT * FROM canvas_object
-                LEFT JOIN category ON canvas_object.category_id = category.uuid`)
+                LEFT JOIN category ON canvas_object.category_id = category.uuid
+                WHERE canvas_object.is_deleted = 0 ORDER BY canvas_object.uuid DESC`)
             .expand()
             .all() as { canvas_object: CanvasObjectEntity, category: CategoryEntity }[];
         return entities.map(entity => CanvasObjectMapper.toModel(entity.canvas_object, entity.category));
@@ -98,7 +99,8 @@ export class CanvasObjectRepository extends BaseRepository<CanvasObject> {
             .prepare(`SELECT * FROM canvas_object AS co
                 LEFT JOIN category ON co.category_id = category.uuid
                 LEFT JOIN note ON co.type = 'Note' AND co.uuid = note.uuid
-                LEFT JOIN heading ON co.type = 'Heading' AND co.uuid = heading.uuid`)
+                LEFT JOIN heading ON co.type = 'Heading' AND co.uuid = heading.uuid
+                WHERE co.is_deleted = 0 ORDER BY co.uuid DESC`)
             .expand()
             .all() as { canvas_object: CanvasObjectEntity, category: CategoryEntity, note: NoteEntity, heading: HeadingEntity }[];
         return entities.map(entity =>

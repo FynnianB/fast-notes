@@ -9,6 +9,8 @@ export enum UiColor {
     BLUE = 'blue',
     CYAN = 'cyan',
     GREEN = 'green',
+    WHITE = 'white',
+    BLACK = 'black',
 }
 
 export function UiColorFromString(color: string): UiColor {

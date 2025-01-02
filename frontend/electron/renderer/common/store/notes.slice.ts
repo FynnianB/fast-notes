@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { NotesStore } from '@common/@types/store.types';
 import * as notesApi from '@common/api/notes.api';
-import type { CanvasObject, CanvasObjectTyped, Note } from '../../../@types/notes.type';
+import type { CanvasObject, CanvasObjectTyped, Heading, Note } from '../../../@types/notes.type';
 
 const initialState: NotesStore = {
     noteItems: [],
@@ -33,6 +33,21 @@ const notesSlice = createSlice({
         updateNote: (state, action: PayloadAction<Note>) => {
             const noteIndex = state.noteItems.findIndex((note) => note.uuid === action.payload.uuid);
             state.noteItems[noteIndex] = {
+                ...action.payload,
+                lastModified: action.payload.lastModified.toISOString(),
+                createdAt: action.payload.createdAt.toISOString(),
+            };
+        },
+        addTemporaryHeading: (state, action: PayloadAction<Heading>) => {
+            state.noteItems.push({
+                ...action.payload,
+                lastModified: action.payload.lastModified.toISOString(),
+                createdAt: action.payload.createdAt.toISOString(),
+            });
+        },
+        updateHeading: (state, action: PayloadAction<Heading>) => {
+            const headingIndex = state.noteItems.findIndex((heading) => heading.uuid === action.payload.uuid);
+            state.noteItems[headingIndex] = {
                 ...action.payload,
                 lastModified: action.payload.lastModified.toISOString(),
                 createdAt: action.payload.createdAt.toISOString(),
@@ -95,6 +110,8 @@ const notesSlice = createSlice({
 export const {
     setNoteItems,
     updateNote,
+    addTemporaryHeading,
+    updateHeading,
     updateCanvasObject,
     deleteCanvasObject,
     setSelectedNoteIds,

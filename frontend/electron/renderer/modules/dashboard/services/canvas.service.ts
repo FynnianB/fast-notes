@@ -3,12 +3,17 @@ import {
     updateNote as updateNoteThunk,
     updateCanvasObject as updateCanvasObjectThunk,
     deleteCanvasObject as deleteCanvasObjectThunk,
+    addTemporaryHeading as addTemporaryHeadingThunk,
+    updateHeading as updateHeadingThunk,
+    fetchNotes,
 } from '@common/store/notes.slice';
 import * as notesApi from '@common/api/notes.api';
 import { selectDashboardUserPreferences } from '@common/store/user-preferences.slice';
 import { useCallback } from 'react';
 import { useAppSelectorRef } from '@common/hooks/react.hooks';
-import type { CanvasObject, Note } from '../../../../@types/notes.type';
+import type { CanvasObject, Heading, Note } from '../../../../@types/notes.type';
+import { CanvasObjectType } from '../../../../main/enumerations/CanvasObjectType';
+import { NoteSyncStatus } from '../../../../main/enumerations/NoteSyncStatus.enumation';
 
 export const useCanvasService = () => {
     const dispatch = useAppDispatch();
@@ -48,9 +53,9 @@ export const useCanvasService = () => {
         notesApi.updateCanvasObject(updatedCanvasObject).then();
     }, [dispatch]);
 
-    const deleteCanvasObject = useCallback((note: Note) => {
-        dispatch(deleteCanvasObjectThunk(note.uuid));
-        notesApi.deleteCanvasObject(note.uuid).then();
+    const deleteCanvasObject = useCallback((canvasObject: CanvasObject) => {
+        dispatch(deleteCanvasObjectThunk(canvasObject.uuid));
+        notesApi.deleteCanvasObject(canvasObject.uuid).then();
     }, [dispatch]);
 
     const moveNoteToDrawer = useCallback((note: Note) => {
@@ -63,11 +68,33 @@ export const useCanvasService = () => {
         notesApi.updateNote(updatedNote).then();
     }, [dispatch]);
 
+    const addHeading = useCallback(async (headingData: Pick<Heading, 'text' | 'fontSize' | 'color' | 'x' | 'y'>) => {
+        dispatch(addTemporaryHeadingThunk({
+            ...headingData,
+            uuid: `temp-${Date.now()}`,
+            type: CanvasObjectType.Heading,
+            lastModified: new Date(),
+            createdAt: new Date(),
+            category: null,
+            syncStatus: NoteSyncStatus.PENDING,
+            isDeleted: false,
+        }));
+        await notesApi.addHeading(headingData);
+        dispatch(fetchNotes());
+    }, [dispatch]);
+
+    const updateHeading = useCallback((heading: Heading) => {
+        dispatch(updateHeadingThunk(heading));
+        notesApi.updateHeading(heading).then();
+    }, [dispatch]);
+
     return {
+        updateNoteContent,
         moveNoteFromDrawerToCanvas,
         moveCanvasObject,
         deleteCanvasObject,
         moveNoteToDrawer,
-        updateNoteContent,
+        addHeading,
+        updateHeading,
     };
 };

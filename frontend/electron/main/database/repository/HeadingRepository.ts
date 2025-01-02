@@ -35,7 +35,7 @@ export class HeadingRepository extends BaseRepository<HeadingModel> {
         const date = new Date().toISOString();
         this.transaction((database) => {
             database.prepare('UPDATE canvas_object SET type = ?, last_modified = ?, category_id = ?, sync_status = ?, is_deleted = ?, x = ?, y = ? WHERE uuid = ?')
-                .run([CanvasObjectType.Heading, date, coEntity.created_at, coEntity.category_id, coEntity.sync_status, coEntity.is_deleted ? 1 : 0, coEntity.x, coEntity.y, coEntity.uuid]);
+                .run([CanvasObjectType.Heading, date, coEntity.category_id, coEntity.sync_status, coEntity.is_deleted ? 1 : 0, coEntity.x, coEntity.y, coEntity.uuid]);
             database.prepare('UPDATE heading SET text = ?, font_size = ?, color = ? WHERE uuid = ?')
                 .run([headingEntity.text, headingEntity.font_size, headingEntity.color, headingEntity.uuid]);
             database.prepare('DELETE FROM sync_queue WHERE table_name = ? AND row_id = ? AND action = ?')

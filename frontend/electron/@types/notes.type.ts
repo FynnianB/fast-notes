@@ -26,8 +26,10 @@ export interface Note extends CanvasObject {
 
 export interface Heading extends CanvasObject {
     text: string;
-    fontSize: number;
-    color: UiColor;
+    fontSize: UiFontSize;
+    color: Exclude<UiColor, UiColor.BLACK>;
 }
+
+type UiFontSize = 1|2|3|4|5|6|7|8|9;
 
 export type CanvasObjectTyped = Note | Heading;
