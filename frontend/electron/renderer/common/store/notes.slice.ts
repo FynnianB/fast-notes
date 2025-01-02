@@ -6,6 +6,7 @@ import type { Note } from '../../../@types/notes.type';
 
 const initialState: NotesStore = {
     noteItems: [],
+    selectedNoteIds: [],
 };
 
 export const fetchNotes = createAsyncThunk(
@@ -13,10 +14,10 @@ export const fetchNotes = createAsyncThunk(
     async () => notesApi.fetchNotes(),
 );
 
-type MoveNotePayload = {
-    noteUuid: Note['uuid'];
-    position: { x: number; y: number };
-};
+interface BulkMoveNotesPayload {
+    noteUuids: string[];
+    offset: { x: number, y: number };
+}
 
 const notesSlice = createSlice({
     name: 'notes',
@@ -29,13 +30,46 @@ const notesSlice = createSlice({
                 createdAt: note.createdAt.toISOString(),
             }));
         },
-        moveNote: (state, action: PayloadAction<MoveNotePayload>) => {
-            const noteIndex = state.noteItems.findIndex((note) => note.uuid === action.payload.noteUuid);
+        updateNote: (state, action: PayloadAction<Note>) => {
+            const noteIndex = state.noteItems.findIndex((note) => note.uuid === action.payload.uuid);
             state.noteItems[noteIndex] = {
-                ...state.noteItems[noteIndex],
-                x: action.payload.position.x,
-                y: action.payload.position.y,
+                ...action.payload,
+                lastModified: action.payload.lastModified.toISOString(),
+                createdAt: action.payload.createdAt.toISOString(),
             };
+        },
+        deleteNote: (state, action: PayloadAction<string>) => {
+            const noteUuid = action.payload;
+            state.noteItems = state.noteItems.filter((note) => note.uuid !== noteUuid);
+        },
+        bulkMoveNotes: (state, action: PayloadAction<BulkMoveNotesPayload>) => {
+            action.payload.noteUuids.forEach((noteUuid) => {
+                const noteIndex = state.noteItems.findIndex((note) => note.uuid === noteUuid);
+                const item = state.noteItems[noteIndex];
+                state.noteItems[noteIndex] = {
+                    ...item,
+                    x: (item.x ?? 0) + action.payload.offset.x,
+                    y: (item.y ?? 0) + action.payload.offset.y,
+                };
+            });
+        },
+        bulkMoveNotesToDrawer: (state, action: PayloadAction<string[]>) => {
+            state.noteItems = state.noteItems.map((note) => {
+                if (action.payload.includes(note.uuid)) {
+                    return {
+                        ...note,
+                        x: null,
+                        y: null,
+                    };
+                }
+                return note;
+            });
+        },
+        bulkDeleteNotes: (state, action: PayloadAction<string[]>) => {
+            state.noteItems = state.noteItems.filter((note) => !action.payload.includes(note.uuid));
+        },
+        setSelectedNoteIds: (state, action: PayloadAction<string[]>) => {
+            state.selectedNoteIds = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -49,6 +83,14 @@ const notesSlice = createSlice({
     },
 });
 
-export const { setNoteItems, moveNote } = notesSlice.actions;
+export const {
+    setNoteItems,
+    updateNote,
+    deleteNote,
+    setSelectedNoteIds,
+    bulkMoveNotes,
+    bulkMoveNotesToDrawer,
+    bulkDeleteNotes,
+} = notesSlice.actions;
 
 export default notesSlice.reducer;

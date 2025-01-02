@@ -6,8 +6,8 @@ export const mapModelToEntity = (model: NoteModel): NoteEntity => {
     return {
         uuid: model.uuid,
         content: model.content,
-        last_modified: model.lastModified.toISOString().slice(0, 19).replace('T', ' '),
-        created_at: model.createdAt.toISOString().slice(0, 19).replace('T', ' '),
+        last_modified: model.lastModified.toISOString(),
+        created_at: model.createdAt.toISOString(),
         category_id: model.category?.uuid ?? null,
         sync_status: model.syncStatus,
         is_deleted: model.isDeleted,

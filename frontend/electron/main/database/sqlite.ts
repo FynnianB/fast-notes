@@ -4,7 +4,7 @@ import { app } from 'electron';
 import * as migrationRunner from './migration_runner';
 
 class SQLite {
-    private readonly db: Database.Database;
+    public readonly db: Database.Database;
 
     constructor() {
         const dbPath = process.env.NODE_ENV === 'development'

@@ -20,10 +20,6 @@ const consoleFnBySyslogLevel = (level: LogLevel) => {
     }
 };
 
-let lastLogEntry: RendererLog | null = null;
-
-const simpleHash = (entry: RendererLog) => `${entry.level}-${entry.message}-${entry.context.stack || ''}-${entry.uri}`;
-
 const logger = {
     log: (level: LogLevel, message: string, context?: object): void => {
         const logEntry: RendererLog = {
@@ -33,15 +29,6 @@ const logger = {
             timestamp: new Date().toISOString(),
             uri: window.location.href,
         };
-
-        // Check if the current error is the same as the last one within a short time window (e.g., 100ms)
-        if (lastLogEntry !== null
-            && simpleHash(logEntry) === simpleHash(lastLogEntry)
-            && (new Date(logEntry.timestamp).getTime() - new Date(lastLogEntry.timestamp).getTime()) < 100
-        ) {
-            return;
-        }
-        lastLogEntry = logEntry;
 
         if (process.env.NODE_ENV === 'development') {
             consoleFnBySyslogLevel(level)(`[${logEntry.level.toUpperCase()}] ${logEntry.message}`, logEntry.context);
