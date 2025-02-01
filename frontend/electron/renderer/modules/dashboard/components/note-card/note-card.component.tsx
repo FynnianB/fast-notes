@@ -6,6 +6,7 @@ import type React from 'react';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { RxDoubleArrowDown, RxDoubleArrowUp } from 'react-icons/rx';
+import MarkdownRenderer from '@common/components/markdown-renderer/markdown-renderer.component';
 import style from './note-card.module.less';
 import type { Note } from '../../../../../@types/notes.type';
 
@@ -52,7 +53,7 @@ const NoteCard = ({
                     )}
                     ref={contentRef}
                 >
-                    {note.content}
+                    <MarkdownRenderer mdContent={note.content} />
                     {(isCollapsable === undefined || isCollapsable) && !isExpanded && (
                         <div
                             className={style.expansionTriggerZone}
