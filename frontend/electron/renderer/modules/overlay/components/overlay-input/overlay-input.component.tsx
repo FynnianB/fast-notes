@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { addNote, closeOverlay } from '@modules/overlay/api/overlay.api';
 import { Button } from '@radix-ui/themes';
 import MarkdownEditor from '@common/components/markdown-editor/markdown-editor.component';
+import { useStateRef } from '@common/hooks/react.hooks';
 import style from './overlay-input.module.less';
 
 const OverlayInput = () => {
-    const [note, setNote] = useState('');
+    const [, setNote, noteRef] = useStateRef('');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
-        if (note.trim().length <= 0) return;
+        if (noteRef.current.trim().length <= 0) return;
         setLoading(true);
-        const success = await addNote(note);
+        const success = await addNote(noteRef.current);
         if (success) {
             await closeOverlay();
         }
