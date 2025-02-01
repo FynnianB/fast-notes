@@ -67,7 +67,7 @@ app.whenReady()
 
         const args = process.argv.slice(1);
         if (args.includes('--overlay')) {
-            await overlayHelper.forceOpenNewOverlayWindow()
+            await overlayHelper.forceOpenNewOverlayWindow();
             return;
         }
         if (!args.includes('--hidden')) {

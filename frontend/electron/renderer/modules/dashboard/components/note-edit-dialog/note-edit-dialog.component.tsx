@@ -1,6 +1,8 @@
-import { Button, Dialog, Flex, TextArea } from '@radix-ui/themes';
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { Button, Dialog, Flex } from '@radix-ui/themes';
+import MarkdownEditor from '@common/components/markdown-editor/markdown-editor.component';
+import { useState } from 'react';
 import type { Note } from '../../../../../@types/notes.type';
+import style from './note-edit-dialog.module.less';
 
 interface NoteEditDialogProps {
     note: Note,
@@ -16,47 +18,18 @@ const NoteEditDialog = ({
     onSubmit,
 }: NoteEditDialogProps) => {
     const [content, setContent] = useState(note.content);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-    const updateTextareaHeight = () => {
-        if (textareaRef.current) {
-            const newHeight = textareaRef.current.scrollHeight;
-            textareaRef.current.style.height = `${newHeight}px`;
-        }
-    };
-
-    useEffect(() => {
-        setContent(note.content);
-        setTimeout(() => {
-            updateTextareaHeight();
-        }, 10);
-    }, [open]);
-
-    const handleInput = async (e: FormEvent<HTMLTextAreaElement>) => {
-        setContent(e.currentTarget.value);
-        updateTextareaHeight();
-    };
 
     return (
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
-            <Dialog.Content style={{ width: 'fit-content' }}>
+            <Dialog.Content style={{ width: '500px' }}>
                 <Dialog.Title>Edit note</Dialog.Title>
                 <Dialog.Description>Make changes to your note below.</Dialog.Description>
-                <TextArea
-                    placeholder="Enter your note here..."
-                    value={content}
-                    onInput={handleInput}
-                    ref={textareaRef}
-                    variant="surface"
-                    autoFocus
-                    size="3"
-                    style={{
-                        minHeight: '3lh',
-                        maxHeight: '20lh',
-                        width: '500px',
-                }}
-                    mt="2"
-                />
+                <div className={style.markdownWrapper}>
+                    <MarkdownEditor
+                        initialText={content}
+                        onChange={setContent}
+                    />
+                </div>
                 <Flex gap="3" mt="4" justify="end">
                     <Dialog.Close>
                         <Button variant="soft" color="gray" type="submit">

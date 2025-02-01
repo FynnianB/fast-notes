@@ -11,10 +11,10 @@ export let overlayWindow: BrowserWindow|null = null;
 
 export const createOverlayWindow = async () => {
     overlayWindow = new BrowserWindow({
-        width: 400,
+        width: 500,
         minHeight: 200,
         maxHeight: 500,
-        height: 200,
+        height: 300,
         webPreferences: {
             preload: path.join(__dirname, 'overlay.preload.js'),
         },

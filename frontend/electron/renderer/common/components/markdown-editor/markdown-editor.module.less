@@ -1,0 +1,15 @@
+.editor {
+  height: 100%;
+  padding: 15px;
+
+  &.fixFullHeight > * {
+    height: 100% !important;
+  }
+
+  & > * {
+    &:nth-child(2) {
+      // Development hack to prevent double editors because of strict mode
+      display: none;
+    }
+  }
+}
